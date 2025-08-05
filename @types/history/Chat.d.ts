@@ -1,9 +1,11 @@
-import Transaction from "./Transaction";
+import Product from "../products/Product";
+import ProductCategory from "../products/ProductCategory";
 
 type ChatMessage = {
-    message: string;
+    productName: Product['name'];
+    productQuantity: Product['quantity'];
+    productCategory: ProductCategory
     timestamp: Date;
-    transactionId: Transaction['id'];
 }
 
 export default ChatMessage;

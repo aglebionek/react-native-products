@@ -1,13 +1,12 @@
-import { StorageAccessFramework, writeAsStringAsync, EncodingType } from 'expo-file-system';
 import { useEffect, useState } from 'react';
-import { Button, Keyboard, View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import { GestureHandlerRootView, ScrollView, TextInput } from 'react-native-gesture-handler';
 
-import { ChatMessage, Product, Transaction } from '@/@types';
+import { ChatMessage, Product } from '@/@types';
 import { Text } from '@/components/common';
 import { useHistory } from '@/contexts/HistoryContext';
 import { useProducts } from '@/contexts/ProductsContext';
-import { usePermissions } from '@/contexts/PermissionsContext';
+import ProductCategory from '@/@types/products/ProductCategory';
 
 enum States {
   SELECTING_CATEGORY = 1,
@@ -15,13 +14,16 @@ enum States {
   SELECTING_QUANTITY = 3,
 }
 
+const formatChatMessage = (message: ChatMessage) => {
+  return `${message.productCategory} ${message.productName} ${message.productQuantity}`;
+}
+
 const Chat = () => {
-  const { chatHistory, handleAddChatMessage, handleAddTransaction, transactionHistory } = useHistory();
-  const { handleDownloadFile } = usePermissions();
+  const { chatHistory, handleAddChatMessage } = useHistory();
   const [state, setState] = useState(States.SELECTING_CATEGORY);
 
   const [inputValue, setInputValue] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState<ProductCategory | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const [quantity, setQuantity] = useState(1);
@@ -30,7 +32,7 @@ const Chat = () => {
 
   const productsCategories = {
     "n": stickers,
-    'a4': prints,
+    "a4": prints,
     "a5": prints,
     "a6": prints,
   }
@@ -49,13 +51,13 @@ const Chat = () => {
     switch (state) {
       case States.SELECTING_CATEGORY: {
         if (parts.length === 1 && parts[0].length === 0) {
-          setCategory('');
+          setCategory(null);
           setSuggestions([]);
           return;
         }
 
         if (parts.length === 1) {
-          const cat = parts[0].toLowerCase();
+          const cat = parts[0].toLowerCase() as ProductCategory;
           // @ts-ignore
           if (productsCategories[cat]) {
             setCategory(cat);
@@ -67,7 +69,7 @@ const Chat = () => {
       case States.SELECTING_KEYWORDS: {
         const keywords = parts.slice(1, parts.length);
         if (keywords.length === 0 && isBackspace && text[text.length - 1] !== ' ') {
-          setCategory(parts[0].toLowerCase());
+          setCategory(parts[0].toLowerCase() as ProductCategory);
           setSuggestions([]);
           setState(States.SELECTING_CATEGORY);
           return;
@@ -122,36 +124,10 @@ const Chat = () => {
         keyboardShouldPersistTaps="always"
       >
         <View style={{ height: 400, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-          <Button
-            title="Download Excel"
-            onPress={async () => {
-              // const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
-              // if (!permissions.granted) {
-              //   return;
-              // }
-              // Implement download functionality here
-              const formatDate = (date: Date) => {
-                const d = new Date(date);
-                return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()}`;
-              };
-              const csvContent = transactionHistory.map(t => `${formatDate(t.date)},${t.productName},${t.quantity}`).join('\n');
-              const dateIsoString = new Date().toISOString();
-              const fileName = `transactions_${dateIsoString.split('T')[0]}.csv`;
-              handleDownloadFile(fileName, csvContent, 'text/csv');
-              // save the file locally as .csv
-              // StorageAccessFramework.createFileAsync(permissions.directoryUri, fileName, 'text/csv').then((fileUri) => {
-              //   writeAsStringAsync(fileUri, csvContent, { encoding: EncodingType.UTF8 }).then(() => {
-              //     console.log(`File saved to ${fileUri}`);
-              //   });
-              // }).catch((error) => {
-              //   console.error(`[ERROR] Failed to create file: ${error}`);
-              // });
-            }}
-          />
 
           {chatHistory.map((chatHistoryElement, index) => (
             <View key={index} style={{ padding: 2, backgroundColor: '#444' }}>
-              <Text style={{ color: 'white' }}>{chatHistoryElement.message}</Text>
+              <Text style={{ color: 'white' }}>{formatChatMessage(chatHistoryElement)}</Text>
             </View>
           ))}
 
@@ -178,23 +154,21 @@ const Chat = () => {
             // on keyboard enter
             onSubmitEditing={(e) => {
               if (state !== States.SELECTING_QUANTITY) return;
-              const id = Array.from({ length: 10 }, () => Math.floor(Math.random() * 10)).join('');
+              if (!product) {
+                console.warn('No product selected');
+                return;
+              }
+              if (!category) {
+                console.warn('No category selected');
+                return;
+              }
+
               const date = new Date();
 
-              let message = e.nativeEvent.text;
-              if (quantity === -1) message = message + ' 1';
-              const newChatHistory: ChatMessage = { message: message, timestamp: date, transactionId: id };
-              const transaction: Transaction = {
-                id,
-                productId: product?.id || '',
-                productName: product?.name || '',
-                quantity: quantity,
-                date,
-              };
+              const newChatHistory: ChatMessage = { productName: product.name, productQuantity: quantity, productCategory: category, timestamp: date };
               handleAddChatMessage(newChatHistory);
-              handleAddTransaction(transaction);
               setInputValue('');
-              setCategory('');
+              setCategory(null);
               setProduct(null);
               setSuggestions([]);
               setState(States.SELECTING_CATEGORY);
@@ -212,7 +186,6 @@ const Chat = () => {
                 setInputValue(`${category} ${suggestion.name.toLowerCase()} `);
                 setSuggestions([]);
                 setState(States.SELECTING_QUANTITY);
-                // switch keyboard to number pad
               }}>
                 <Text key={index} style={{ fontSize: 18 }}>{suggestion.name}</Text>
               </View>

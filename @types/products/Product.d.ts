@@ -1,5 +1,4 @@
 type Product = {
-    id: string;
     name: string;
     keywords: string[];
     quantity: number;
