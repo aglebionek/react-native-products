@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Chattur Products",
+    "slug": "products",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/image.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash2.png",
+      "resizeMode": "center",
+      "backgroundColor": "#2B2746"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.products"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/image.png",
+        "backgroundColor": "#2B2746"
+      },
+      "package": "com.anonymous.products"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/image.png"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
