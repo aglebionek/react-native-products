@@ -1,10 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
-import { View } from 'react-native';
 
-import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
-import { Text } from '@/components/common';
-import SplashScreen from '@/components/SplashScreen';
+import { SplashScreen } from '@/components';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ProductsProvider } from '@/contexts/ProductsContext';
 import { HistoryProvider } from '@/contexts/HistoryContext';
 import { PermissionsProvider } from '@/contexts/PermissionsContext';

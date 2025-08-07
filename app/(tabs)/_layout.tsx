@@ -1,11 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { View } from 'react-native';
 
+import { Text } from '@/components';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useTheme } from '@/contexts/ThemeContext';
-import { View } from 'react-native';
-import { Text } from '@/components/common';
 
 export default function TabLayout() {
   const { COLORS } = useTheme();
