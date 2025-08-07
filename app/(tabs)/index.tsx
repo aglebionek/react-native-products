@@ -7,6 +7,7 @@ import ProductCategory from '@/@types/products/ProductCategory';
 import { SuggestionButton, Text } from '@/components';
 import { useHistory } from '@/contexts/HistoryContext';
 import { useProducts } from '@/contexts/ProductsContext';
+import { formatDateToPolishFormat } from '@/utils/common';
 
 enum States {
   SELECTING_CATEGORY = 1,
@@ -15,7 +16,7 @@ enum States {
 }
 
 const formatChatMessage = (message: ChatMessage) => {
-  return `${message.productCategory} ${message.productName} ${message.productQuantity}`;
+  return `${formatDateToPolishFormat(message.timestamp).time} - ${message.productCategory} ${message.productName} ${message.productQuantity}`;
 }
 
 const Chat = () => {
@@ -128,16 +129,14 @@ const Chat = () => {
         const i = parts.length - 1;
         if (i === 1 && isBackspace) {
           setState(States.SELECTING_PRODUCT);
-          setProductSuggestions([]);
         }
         const lastPart = parts[i].trim();
-        console.log(lastPart, lastPart.length);
         if (lastPart.length === 0) setQuantity(-1);
         if (!isNaN(Number(lastPart))) {
           const newQuantity = Number(lastPart);
           setQuantity(newQuantity);
-          break;
         }
+        break;
       }
     }
   }
@@ -155,19 +154,13 @@ const Chat = () => {
             </View>
           ))}
 
-          <View style={{ display: 'flex', flexDirection: 'row', gap: 3 }}>
-            <Text>{category}</Text>
-            {product && <Text>{product.name}</Text>}
-            {state === States.SELECTING_QUANTITY && <Text>{quantity}</Text>}
-          </View>
-
           <TextInput
             placeholder="Search....."
             style={{
               height: 40,
               borderColor: 'grey',
               borderWidth: 1,
-              marginBottom: 10,
+              marginVertical: 10,
               paddingHorizontal: 10,
               color: 'white'
             }}
