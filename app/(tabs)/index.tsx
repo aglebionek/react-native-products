@@ -30,11 +30,11 @@ const Chat = () => {
 
   const { stickers, prints } = useProducts();
 
-  const productsCategories = {
-    "n": stickers,
-    "a4": prints,
-    "a5": prints,
-    "a6": prints,
+  const productsCategories: Record<ProductCategory, Product[]> = {
+    "N": stickers,
+    "A4": prints,
+    "A5": prints,
+    "A6": prints,
   }
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const Chat = () => {
         }
 
         if (parts.length === 1) {
-          const cat = parts[0].toLowerCase() as ProductCategory;
+          const cat = parts[0].toUpperCase() as ProductCategory;
           // @ts-ignore
           if (productsCategories[cat]) {
             setCategory(cat);
@@ -69,7 +69,7 @@ const Chat = () => {
       case States.SELECTING_KEYWORDS: {
         const keywords = parts.slice(1, parts.length);
         if (keywords.length === 0 && isBackspace && text[text.length - 1] !== ' ') {
-          setCategory(parts[0].toLowerCase() as ProductCategory);
+          setCategory(parts[0].toUpperCase() as ProductCategory);
           setSuggestions([]);
           setState(States.SELECTING_CATEGORY);
           return;
@@ -165,7 +165,12 @@ const Chat = () => {
 
               const date = new Date();
 
-              const newChatHistory: ChatMessage = { productName: product.name, productQuantity: quantity, productCategory: category, timestamp: date };
+              const newChatHistory: ChatMessage = {
+                productName: product.name,
+                productQuantity: quantity,
+                productCategory: category,
+                timestamp: date
+              };
               handleAddChatMessage(newChatHistory);
               setInputValue('');
               setCategory(null);

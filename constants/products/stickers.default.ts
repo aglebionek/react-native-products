@@ -1,5 +1,6 @@
 import { Sticker } from "@/@types";
 
+// TODO: change quantity to stock
 const defaultStickers: Sticker[] = [
   // ALIEN STAGE
   { name: "Hyuna", keywords: ['hyuna', 'alien', 'stage'], quantity: 1, holo: false},
