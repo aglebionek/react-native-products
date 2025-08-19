@@ -1,5 +1,5 @@
 export const formatDateToPolishFormat = (date: Date) => {
-    if (!(date instanceof Date)) return { date: '', time: '', full: '' };
+    if (!(date instanceof Date)) return { date: '', time: '', datetime: '', weekDay: '' };
     const options: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: '2-digit',
@@ -11,7 +11,8 @@ export const formatDateToPolishFormat = (date: Date) => {
     };
     const formattedDate = new Intl.DateTimeFormat('pl-PL', options).format(date);
     const [datePart, timePart] = formattedDate.split(', ');
-    return { date: datePart, time: timePart, full: formattedDate };
+    const weekday = new Intl.DateTimeFormat('pl-PL', { weekday: 'long' }).format(date);
+    return { date: datePart, time: timePart, datetime: formattedDate, weekday: weekday };
 }
 
 export const formatDateToYYYY_MM_DD = (date: Date) => {

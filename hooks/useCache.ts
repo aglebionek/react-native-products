@@ -1,8 +1,23 @@
-import { cacheDirectory, getInfoAsync, readAsStringAsync, writeAsStringAsync } from "expo-file-system";
-import { useCallback } from "react";
+import { cacheDirectory, getInfoAsync, readAsStringAsync, writeAsStringAsync, readDirectoryAsync, makeDirectoryAsync } from "expo-file-system";
+import { useCallback, useEffect } from "react";
 
-const useCache = (cachedFileName: string) => {
-    const cachedFilePath = `${cacheDirectory}${cachedFileName}`;
+const useCache = (cachedFileName: string, cachedFileDirectory: string = "") => {
+    if (cachedFileDirectory && !cachedFileDirectory.endsWith('/')) cachedFileDirectory += '/';
+    const cachedFilePath = `${cacheDirectory}${cachedFileDirectory}${cachedFileName}`;
+
+    useEffect(() => {
+        if (cachedFileDirectory === "") return;
+        const createDirectory = async () => {
+            try {
+                const directory = `${cacheDirectory}${cachedFileDirectory}`;
+                await makeDirectoryAsync(directory, { intermediates: true });
+            } catch (error) {
+                console.error(error);
+                console.error("Failed to create cache directory");
+            }
+        };
+        createDirectory();
+    }, []);
 
     const checkIfFileExistsInCache = useCallback(async () => {
         try {
@@ -39,7 +54,24 @@ const useCache = (cachedFileName: string) => {
         }
     }, [cachedFilePath]);
 
-    return { checkIfFileExistsInCache, readFileFromCache, saveDataToCache };
+    const readAllFilesFromDirectory = useCallback(async () => {
+        try {
+            if (cachedFileDirectory === "") return [];
+            const directory = `${cacheDirectory}${cachedFileDirectory}`;
+            const { exists, isDirectory } = await getInfoAsync(directory);
+            if (exists && isDirectory) {
+                const files = await readDirectoryAsync(directory);
+                return files.filter(file => file.startsWith('chat_history_') && file.endsWith('.json')).sort();
+            }
+            return [];
+        } catch (error) {
+            console.error(error);
+            console.error("Failed to read all files from cache");
+            return [];
+        }
+    }, []);
+
+    return { checkIfFileExistsInCache, readFileFromCache, saveDataToCache, readAllFilesFromDirectory };
 }
 
 export default useCache;

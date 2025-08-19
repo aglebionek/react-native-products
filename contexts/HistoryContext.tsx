@@ -11,26 +11,27 @@ type DateRange = {
 
 type HistoryContextType = {
     chatHistory: ChatMessage[];
-    setChatHistory: (chatHistory: ChatMessage[]) => void;
-    handleAddChatMessage: (message: ChatMessage) => void;
     dateRange: DateRange;
-    setDateRange: (range: DateRange) => void;
+    handleAddChatMessage: (message: ChatMessage) => void;
+    readAllChatHistoryFiles: () => Promise<string[]>;
+    setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+    setDateRange: React.Dispatch<React.SetStateAction<DateRange>>;
 };
 
 const HistoryContext = createContext<HistoryContextType>({
     chatHistory: [],
-    setChatHistory: () => { },
-    handleAddChatMessage: (message: ChatMessage) => { },
     dateRange: { start: null, end: null },
+    handleAddChatMessage: () => { },
+    readAllChatHistoryFiles: () => Promise.resolve([]),
+    setChatHistory: () => { },
     setDateRange: () => { },
 });
 
 export const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
     const [_YYYY_MM_DD, _setYYYY_MM_DD] = useState(formatDateToYYYY_MM_DD(new Date()));
-    const [_datesList, _setDatesList] = useState<Date[]>([]);
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null });
-    const { saveDataToCache: saveChatHistoryToCache, readFileFromCache: readChatHistoryFromCache } = useCache(`chat_history_${_YYYY_MM_DD}.json`);
+    const { saveDataToCache: saveChatHistoryToCache, readFileFromCache: readChatHistoryFromCache, readAllFilesFromDirectory: readAllChatHistoryFiles } = useCache(`chat_history_${_YYYY_MM_DD}.json`, 'chat_history');
 
     useEffect(() => {
         const readChatHistory = async () => {
@@ -50,21 +51,6 @@ export const HistoryProvider = ({ children }: { children: React.ReactNode }) => 
         readChatHistory();
     }, [_YYYY_MM_DD]);
 
-    // useEffect(() => {
-    //     if (dateRange.start && dateRange.end) {
-    //         const start = new Date(dateRange.start);
-    //         const end = new Date(dateRange.end);
-    //         const dates: Date[] = [];
-    //         for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
-    //             const YYYY_MM_DD = d.toISOString().split('T')[0].replace(/-/g, '_');
-    //             dates.push(new Date(YYYY_MM_DD));
-    //         }
-    //         _setDatesList(dates);
-    //     } else {
-    //         _setDatesList([]);
-    //     }
-    // }, [dateRange.start, dateRange.end]);
-
     const handleAddChatMessage = (message: ChatMessage) => {
         const YYYY_MM_DD = formatDateToYYYY_MM_DD(message.timestamp);
         if (YYYY_MM_DD !== _YYYY_MM_DD) _setYYYY_MM_DD(YYYY_MM_DD);
@@ -78,9 +64,10 @@ export const HistoryProvider = ({ children }: { children: React.ReactNode }) => 
     return (
         <HistoryContext.Provider value={{
             chatHistory,
-            setChatHistory,
-            handleAddChatMessage,
             dateRange,
+            handleAddChatMessage,
+            readAllChatHistoryFiles,
+            setChatHistory,
             setDateRange
         }}>
             {children}
