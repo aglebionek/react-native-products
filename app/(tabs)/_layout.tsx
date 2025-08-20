@@ -10,9 +10,7 @@ export default function TabLayout() {
   return (
     <LinearGradient colors={[COLORS.backgroundStart, COLORS.backgroundMiddle, COLORS.backgroundEnd]} style={{ flex: 1, paddingTop: 80 }}>
       <Tabs
-        screenOptions={{
-          headerShown: false,
-        }}
+        screenOptions={{ headerShown: false }}
         tabBar={() => <></>}
       >
       </Tabs>

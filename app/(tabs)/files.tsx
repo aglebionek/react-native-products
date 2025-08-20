@@ -7,7 +7,7 @@ import { useHistory } from '@/contexts/HistoryContext';
 import { Ionicons } from '@expo/vector-icons';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useRouter } from 'expo-router';
-import { formatDateToPolishFormat, formatDateToYYYY_MM_DD, getCurrentDateInPolishTimezone } from '@/utils/common';
+import { date2String, date2YYYY_MM_DD, getCurrentDateInPolishTimezone } from '@/utils/common';
 
 const extractYYYY_MM_DD = (filename: string) => {
   const match = filename.match(/chat_history_(\d{4}_\d{2}_\d{2})\.json/);
@@ -31,7 +31,7 @@ const Chat = () => {
 
   const convertChatHistoryToCSV = () => {
     const rows = chatHistory.map(message => {
-      const date = formatDateToPolishFormat(message.timestamp);
+      const date = date2String(message.timestamp);
       return `${date.date} ${date.time}, ${message.productCategory}, ${message.productName}, ${message.productQuantity}`;
     });
     return rows.join("\n");
@@ -48,7 +48,7 @@ const Chat = () => {
               onPress={() => {
                 const YYYY_MM_DD = extractYYYY_MM_DD(chatHistoryElement) as string;
                 const currentDate = getCurrentDateInPolishTimezone();
-                const currentYYYY_MM_DD = formatDateToYYYY_MM_DD(currentDate);
+                const currentYYYY_MM_DD = date2YYYY_MM_DD(currentDate);
                 _setYYYY_MM_DD(YYYY_MM_DD);
                 if (YYYY_MM_DD === currentYYYY_MM_DD) return navigate(`/(tabs)/`);
                 navigate(`/(tabs)/old_chat`);

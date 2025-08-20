@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { ChatMessage } from "@/@types";
 import useCache from "@/hooks/useCache";
-import { formatDateToYYYY_MM_DD } from "@/utils/common";
+import { date2YYYY_MM_DD } from "@/utils/common";
 
 type DateRange = {
     start: Date | null;
@@ -17,6 +17,7 @@ type HistoryContextType = {
     setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
     setDateRange: React.Dispatch<React.SetStateAction<DateRange>>;
     _setYYYY_MM_DD: React.Dispatch<React.SetStateAction<string>>;
+    _YYYY_MM_DD: string;
 };
 
 const HistoryContext = createContext<HistoryContextType>({
@@ -26,11 +27,12 @@ const HistoryContext = createContext<HistoryContextType>({
     readAllChatHistoryFiles: () => Promise.resolve([]),
     setChatHistory: () => { },
     setDateRange: () => { },
-    _setYYYY_MM_DD: () => { }
+    _setYYYY_MM_DD: () => { },
+    _YYYY_MM_DD: ""
 });
 
 export const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
-    const [_YYYY_MM_DD, _setYYYY_MM_DD] = useState(formatDateToYYYY_MM_DD(new Date()));
+    const [_YYYY_MM_DD, _setYYYY_MM_DD] = useState(date2YYYY_MM_DD(new Date()));
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null });
     const { saveDataToCache: saveChatHistoryToCache, readFileFromCache: readChatHistoryFromCache, readAllFilesFromDirectory: readAllChatHistoryFiles } = useCache(`chat_history_${_YYYY_MM_DD}.json`, 'chat_history');
@@ -79,7 +81,8 @@ export const HistoryProvider = ({ children }: { children: React.ReactNode }) => 
             readAllChatHistoryFiles,
             setChatHistory,
             setDateRange,
-            _setYYYY_MM_DD
+            _setYYYY_MM_DD,
+            _YYYY_MM_DD
         }}>
             {children}
         </HistoryContext.Provider>

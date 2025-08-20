@@ -7,7 +7,7 @@ import ProductCategory from '@/@types/products/ProductCategory';
 import { SuggestionButton, Text } from '@/components';
 import { useHistory } from '@/contexts/HistoryContext';
 import { useProducts } from '@/contexts/ProductsContext';
-import { formatDateToPolishFormat, getCurrentDateInPolishTimezone } from '@/utils/common';
+import { date2String, getCurrentDateInPolishTimezone } from '@/utils/common';
 
 enum States {
   SELECTING_CATEGORY = 1,
@@ -16,7 +16,7 @@ enum States {
 }
 
 const formatChatMessage = (message: ChatMessage) => {
-  return `${formatDateToPolishFormat(message.timestamp).time} - ${message.productCategory} ${message.productName} ${message.productQuantity}`;
+  return `${date2String(message.timestamp).time} - ${message.productCategory} ${message.productName} ${message.productQuantity}`;
 }
 
 const Chat = () => {

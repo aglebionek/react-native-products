@@ -3,17 +3,24 @@ import { Stack, useRouter, usePathname } from 'expo-router';
 import { SplashScreen, Text } from '@/components';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { ProductsProvider } from '@/contexts/ProductsContext';
-import { HistoryProvider } from '@/contexts/HistoryContext';
+import { HistoryProvider, useHistory } from '@/contexts/HistoryContext';
 import { PermissionsProvider } from '@/contexts/PermissionsContext';
 import { View } from 'react-native';
-import { formatDateToPolishFormat } from '@/utils/common';
+import { date2String } from '@/utils/common';
 import { Ionicons } from '@expo/vector-icons';
 
+const selectHeaderTitle = (pathname: string, formattedDate: string, _YYYY_MM_DD: string) => {
+  if (pathname === '/files') return "History";
+  if (pathname === '/old_chat') return _YYYY_MM_DD;
+  return formattedDate;
+}
+
 const Header = () => {
+  const { _YYYY_MM_DD } = useHistory();
   const pathname = usePathname();
   const { navigate } = useRouter();
   const { COLORS } = useTheme();
-  const formattedDate = formatDateToPolishFormat(new Date());
+  const formattedDate = date2String(new Date());
 
   return (
     <View style={{
@@ -32,7 +39,7 @@ const Header = () => {
       </View>
       <View style={{ width: '85%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingRight: '15%' }}>
         <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginBottom: 10 }}>
-          {formattedDate.weekday}, {formattedDate.date}
+          {selectHeaderTitle(pathname, `${formattedDate.weekday}, ${formattedDate.date}`, _YYYY_MM_DD)}
         </Text>
       </View>
     </View >

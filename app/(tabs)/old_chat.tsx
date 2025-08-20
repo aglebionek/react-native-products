@@ -4,10 +4,10 @@ import { View } from "react-native";
 import { ChatMessage } from '@/@types';
 import { Text } from '@/components';
 import { useHistory } from '@/contexts/HistoryContext';
-import { formatDateToPolishFormat } from '@/utils/common';
+import { date2String } from '@/utils/common';
 
 const formatChatMessage = (message: ChatMessage) => {
-    return `${formatDateToPolishFormat(message.timestamp).time} - ${message.productCategory} ${message.productName} ${message.productQuantity}`;
+    return `${date2String(message.timestamp).time} - ${message.productCategory} ${message.productName} ${message.productQuantity}`;
 }
 
 const Chat = () => {
