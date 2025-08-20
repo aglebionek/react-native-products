@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
-import { Pressable, View } from "react-native";
+import { Pressable, ToastAndroid, View } from "react-native";
 
 import { Text } from '@/components';
 import { useHistory } from '@/contexts/HistoryContext';
@@ -8,6 +8,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useRouter } from 'expo-router';
 import { date2String, date2YYYY_MM_DD, getCurrentDateInPolishTimezone } from '@/utils/common';
+import useNotifications from '@/hooks/useNotifications';
+import { NotificationContentInput, NotificationResponse, NotificationTriggerInput } from 'expo-notifications';
+import { startActivityAsync } from 'expo-intent-launcher';
 
 const extractYYYY_MM_DD = (filename: string) => {
   const match = filename.match(/chat_history_(\d{4}_\d{2}_\d{2})\.json/);
@@ -18,6 +21,17 @@ const Chat = () => {
   const { chatHistory, readAllChatHistoryFiles, _setYYYY_MM_DD } = useHistory();
   const { handleDownloadFile } = usePermissions();
   const { navigate } = useRouter();
+
+  const onNotificationClicked = async (response: NotificationResponse) => {
+    const data = response.notification.request.content.data;
+    await startActivityAsync('android.intent.action.VIEW', {
+      data: data.fileUri,
+      flags: 1,
+      type: data.mimetype,
+    });
+  }
+  
+  const { sendPushNotification } = useNotifications({ onNotificationClicked });
 
   const [chatHistoryFiles, setChatHistoryFiles] = useState<string[]>([]);
 
@@ -35,6 +49,30 @@ const Chat = () => {
       return `${date.date} ${date.time}, ${message.productCategory}, ${message.productName}, ${message.productQuantity}`;
     });
     return rows.join("\n");
+  }
+
+  const handleDownloadCSV = async (chatHistoryElement: string) => {
+    ToastAndroid.show("Downloading CSV...", ToastAndroid.SHORT);
+    const YYYY_MM_DD = extractYYYY_MM_DD(chatHistoryElement);
+    const csvData = convertChatHistoryToCSV();
+    const filename = `${YYYY_MM_DD}.csv`;
+    const mimetype = 'text/csv';
+
+    const fileUri = await handleDownloadFile(filename, csvData, mimetype);
+    const trigger = { seconds: 1, repeats: false } as NotificationTriggerInput;
+    const content = {
+      autoDismiss: true,
+      title: `File ${filename} download failed`,
+      body: `Tap to retry.`,
+      data: {},
+    } as NotificationContentInput;
+
+    if (fileUri) {
+      content.title = `File ${filename} downloaded`;
+      content.body = `Tap to open.`;
+      content.data = { fileUri, mimetype };
+    }
+    await sendPushNotification(content, trigger);
   }
 
   return (
@@ -64,12 +102,7 @@ const Chat = () => {
                 name="arrow-down"
                 size={35}
                 style={{ marginBottom: 10 }}
-                onPress={() => {
-                  const YYYY_MM_DD = extractYYYY_MM_DD(chatHistoryElement);
-                  const csvData = convertChatHistoryToCSV();
-                  handleDownloadFile(`${YYYY_MM_DD}.csv`, csvData, 'text/csv');
-                  // TODO: add system notification about the downloaded file
-                }}
+                onPress={() => handleDownloadCSV(chatHistoryElement)}
               />
             </View>
           </View>

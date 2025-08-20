@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { GestureHandlerRootView, ScrollView, TextInput } from 'react-native-gesture-handler';
 import { ToastAndroid, View } from "react-native";
 

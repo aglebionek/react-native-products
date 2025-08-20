@@ -5,12 +5,12 @@ import useCache from "@/hooks/useCache";
 
 type ThemeContextType = {
     permissionsLoaded: boolean;
-    handleDownloadFile: (fileName: string, content: string, mimeType: string) => Promise<void>;
+    handleDownloadFile: (fileName: string, content: string, mimeType: string) => Promise<string | null>;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
     permissionsLoaded: false,
-    handleDownloadFile: async () => { },
+    handleDownloadFile: async () => null
 })
 
 export const PermissionsProvider = ({ children }: { children: React.ReactNode }) => {
@@ -47,13 +47,15 @@ export const PermissionsProvider = ({ children }: { children: React.ReactNode })
             
             if (!targetDirectory) {
                 targetDirectory = await _handleRequestDownloadDirectoryPermission();
-                if (!targetDirectory) return;
+                if (!targetDirectory) return null;
             }
             
             const fileUri = await FileSystem.StorageAccessFramework.createFileAsync(targetDirectory, fileName, mimeType)
             await FileSystem.writeAsStringAsync(fileUri, content, { encoding: FileSystem.EncodingType.UTF8 });
+            return fileUri;
         } catch (error) {
             console.error(`[ERROR] PermissionsContextProvider.handleDownloadFile \n ${error}`);
+            return null;
         } 
     }
 
