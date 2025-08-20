@@ -8,6 +8,7 @@ export const formatDateToPolishFormat = (date: Date) => {
         minute: '2-digit',
         second: '2-digit',
         hour12: false,
+        timeZone: 'UTC',
     };
     const formattedDate = new Intl.DateTimeFormat('pl-PL', options).format(date);
     const [datePart, timePart] = formattedDate.split(', ');
@@ -18,4 +19,23 @@ export const formatDateToPolishFormat = (date: Date) => {
 export const formatDateToYYYY_MM_DD = (date: Date) => {
     if (!(date instanceof Date)) return '';
     return date.toISOString().split('T')[0].replace(/-/g, '_')
+}
+
+export const getCurrentDateInPolishTimezone = (): Date => {
+    const now = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+        timeZone: 'Europe/Warsaw',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    };
+    const formattedDate = new Intl.DateTimeFormat('pl-PL', options).format(now);
+    const [datePart, timePart] = formattedDate.split(', ');
+    const [day, month, year] = datePart.split('.').map(part => parseInt(part, 10));
+    const [hours, minutes, seconds] = timePart.split(':').map(part => parseInt(part, 10));
+    return new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds));
 }

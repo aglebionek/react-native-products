@@ -16,6 +16,7 @@ type HistoryContextType = {
     readAllChatHistoryFiles: () => Promise<string[]>;
     setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
     setDateRange: React.Dispatch<React.SetStateAction<DateRange>>;
+    _setYYYY_MM_DD: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const HistoryContext = createContext<HistoryContextType>({
@@ -25,6 +26,7 @@ const HistoryContext = createContext<HistoryContextType>({
     readAllChatHistoryFiles: () => Promise.resolve([]),
     setChatHistory: () => { },
     setDateRange: () => { },
+    _setYYYY_MM_DD: () => { }
 });
 
 export const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
@@ -52,15 +54,23 @@ export const HistoryProvider = ({ children }: { children: React.ReactNode }) => 
     }, [_YYYY_MM_DD]);
 
     const handleAddChatMessage = (message: ChatMessage) => {
-        const YYYY_MM_DD = formatDateToYYYY_MM_DD(message.timestamp);
-        if (YYYY_MM_DD !== _YYYY_MM_DD) _setYYYY_MM_DD(YYYY_MM_DD);
+        //     // TODO this doesn't work
+        // const YYYY_MM_DD = formatDateToYYYY_MM_DD(message.timestamp);
+        // console.log(`YYYY_MM_DD: ${YYYY_MM_DD}, _YYYY_MM_DD: ${_YYYY_MM_DD}`);
+        // if (YYYY_MM_DD !== _YYYY_MM_DD) {
+        //     _setYYYY_MM_DD(YYYY_MM_DD);
+        //     const newChatHistory = [message];
+        //     setChatHistory(newChatHistory);
+        //     saveChatHistoryToCache(JSON.stringify(newChatHistory));
+        //     return;
+        // }
         setChatHistory(prev => {
             const newChatHistory = [...prev, message];
             saveChatHistoryToCache(JSON.stringify(newChatHistory));
             return newChatHistory;
         });
     }
-    
+
     return (
         <HistoryContext.Provider value={{
             chatHistory,
@@ -68,7 +78,8 @@ export const HistoryProvider = ({ children }: { children: React.ReactNode }) => 
             handleAddChatMessage,
             readAllChatHistoryFiles,
             setChatHistory,
-            setDateRange
+            setDateRange,
+            _setYYYY_MM_DD
         }}>
             {children}
         </HistoryContext.Provider>

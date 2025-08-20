@@ -7,7 +7,7 @@ import ProductCategory from '@/@types/products/ProductCategory';
 import { SuggestionButton, Text } from '@/components';
 import { useHistory } from '@/contexts/HistoryContext';
 import { useProducts } from '@/contexts/ProductsContext';
-import { formatDateToPolishFormat } from '@/utils/common';
+import { formatDateToPolishFormat, getCurrentDateInPolishTimezone } from '@/utils/common';
 
 enum States {
   SELECTING_CATEGORY = 1,
@@ -179,11 +179,13 @@ const Chat = () => {
                 return;
               }
 
+              const timestamp = getCurrentDateInPolishTimezone();
+
               const newChatHistory: ChatMessage = {
                 productName: product.name,
                 productQuantity: quantity,
                 productCategory: category,
-                timestamp: new Date()
+                timestamp
               };
               handleAddChatMessage(newChatHistory);
               handleSetDefaultStates();

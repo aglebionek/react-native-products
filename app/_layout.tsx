@@ -23,11 +23,11 @@ const Header = () => {
     }}>
       <View style={{ width: '15%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
         <Ionicons
-          name={pathname === '/' ? 'list' : 'chatbubble'}
+          name={pathname === '/files' ? 'chatbubble' : 'list'}
           size={35}
           color={COLORS.tabIconSelected}
           style={{ marginBottom: 10 }}
-          onPress={() => pathname === '/' ? navigate('/(tabs)/files') : navigate('/')}
+          onPress={() => pathname === '/files' ? navigate('/') : navigate('/(tabs)/files')}
         />
       </View>
       <View style={{ width: '85%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingRight: '15%' }}>

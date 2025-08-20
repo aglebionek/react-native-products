@@ -33,7 +33,7 @@ const useCache = (cachedFileName: string, cachedFileDirectory: string = "") => {
     const readFileFromCache = useCallback(async () => {
         try {
             if (await checkIfFileExistsInCache()) {
-                return await readAsStringAsync(cachedFilePath);
+                return readAsStringAsync(cachedFilePath);
             }
             return null;
         } catch (error) {
@@ -59,10 +59,7 @@ const useCache = (cachedFileName: string, cachedFileDirectory: string = "") => {
             if (cachedFileDirectory === "") return [];
             const directory = `${cacheDirectory}${cachedFileDirectory}`;
             const { exists, isDirectory } = await getInfoAsync(directory);
-            if (exists && isDirectory) {
-                const files = await readDirectoryAsync(directory);
-                return files.filter(file => file.startsWith('chat_history_') && file.endsWith('.json')).sort();
-            }
+            if (exists && isDirectory) return readDirectoryAsync(directory);
             return [];
         } catch (error) {
             console.error(error);
