@@ -81,7 +81,7 @@ const Chat = () => {
         keyboardShouldPersistTaps="always"
       >
         {chatHistoryFiles.map((chatHistoryElement, index) => (
-          <View key={`chat-file-${index}`} style={{ padding: 2, backgroundColor: '#444', display: 'flex', flexDirection: 'row' }}>
+          <View key={`chat-file-${index}`} style={{ padding: 2, display: 'flex', flexDirection: 'row' }}>
             <Pressable style={{ width: '90%', display: 'flex', flexDirection: 'row' }}
               onPress={() => {
                 const YYYY_MM_DD = extractYYYY_MM_DD(chatHistoryElement) as string;

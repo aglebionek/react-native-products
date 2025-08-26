@@ -23,8 +23,8 @@ const Chat = () => {
   const { chatHistory, handleAddChatMessage } = useHistory();
   const [state, setState] = useState(States.SELECTING_CATEGORY);
 
-  const [inputValue, setInputValue] = useState('');
   const [category, setCategory] = useState<ProductCategory | null>(null);
+  const [inputValue, setInputValue] = useState('');
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
 
@@ -59,14 +59,21 @@ const Chat = () => {
 
   const handleSetProduct = (product: Product) => {
     setProduct(product);
-    setInputValue(`${category} ${product.name} `);
+    setInputValue(`${category} ${product.name} ${quantity}`);
     setState(States.SELECTING_QUANTITY);
+  }
+
+  const handleUnsetSelectingQuantity = () => {
+    setState(States.SELECTING_PRODUCT);
+    setQuantity(1);
+    setInputValue(inputValue.replace(/\s\d+$/, ''));
   }
 
   const onChangeInputText = (inputText: string) => {
     const isBackspace = inputText.length < inputValue.length;
     inputText = inputText.trimStart();
     inputText = inputText.replace(/\s+/g, ' ');
+    inputText = inputText.replace(/[^a-zA-Z0-9 ]/g, '')
     const parts = inputText.split(' ').filter(part => part.length > 0);
     setInputValue(inputText);
 
@@ -105,15 +112,12 @@ const Chat = () => {
         let valuesToFilter = productSuggestions;
         const lastKeyword = keywords[keywords.length - 1]?.toLowerCase() || '';
         if (lastKeyword.length <= 1 || isBackspace) {
-          // @ts-ignore
-          valuesToFilter = productsCategories[category];
+          valuesToFilter = productsCategories[category as ProductCategory];
         }
 
         filteredProducts = valuesToFilter.filter(sticker => {
-          // look for a sticker that has all keywords in its keywords array
-          return keywords.every((kw) => sticker.keywords.some((stickerKw) => stickerKw.startsWith(kw)));
+          return keywords.every((kw) => sticker.keywords.some((stickerKw) => stickerKw.toLowerCase().startsWith(kw.toLowerCase())));
         });
-        // sort them so that the ones which names start with the keyword are first
         filteredProducts.sort((a, b) => {
           const aStartsWith = a.name.toLowerCase().startsWith(lastKeyword);
           const bStartsWith = b.name.toLowerCase().startsWith(lastKeyword);
@@ -127,11 +131,9 @@ const Chat = () => {
       }
       case States.SELECTING_QUANTITY: {
         const i = parts.length - 1;
-        if (i === 1 && isBackspace) {
-          setState(States.SELECTING_PRODUCT);
-        }
+        if (i === 1 && isBackspace) return handleUnsetSelectingQuantity();
         const lastPart = parts[i].trim();
-        if (lastPart.length === 0) setQuantity(-1);
+        if (lastPart.length === 0) setQuantity(1);
         if (!isNaN(Number(lastPart))) {
           const newQuantity = Number(lastPart);
           setQuantity(newQuantity);
@@ -143,9 +145,7 @@ const Chat = () => {
 
   return (
     <GestureHandlerRootView>
-      <ScrollView
-        keyboardShouldPersistTaps="always"
-      >
+      <ScrollView keyboardShouldPersistTaps="always">
         <View style={{ height: 400, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
 
           {chatHistory.map((chatHistoryElement, index) => (
@@ -164,6 +164,7 @@ const Chat = () => {
               paddingHorizontal: 10,
               color: 'white'
             }}
+            selection={state === States.SELECTING_QUANTITY ? { start: inputValue.length - 1, end: inputValue.length } : undefined}
             value={inputValue}
             onChangeText={onChangeInputText}
             keyboardType={state === States.SELECTING_QUANTITY ? 'number-pad' : 'default'}

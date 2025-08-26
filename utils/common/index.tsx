@@ -16,9 +16,8 @@ export const date2String = (date: Date) => {
     return { date: datePart, time: timePart, datetime: formattedDate, weekday: weekday };
 }
 
-export const YYYY_MM_DD2Date = (dateString: string): Date | null => {
+export const YYYY_MM_DD2Date = (dateString: string): Date => {
     const [year, month, day] = dateString.split('_').map(part => parseInt(part, 10));
-    if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
     return new Date(Date.UTC(year, month - 1, day));
 }
 

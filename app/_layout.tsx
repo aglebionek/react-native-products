@@ -6,13 +6,17 @@ import { ProductsProvider } from '@/contexts/ProductsContext';
 import { HistoryProvider, useHistory } from '@/contexts/HistoryContext';
 import { PermissionsProvider } from '@/contexts/PermissionsContext';
 import { View } from 'react-native';
-import { date2String } from '@/utils/common';
+import { date2String, YYYY_MM_DD2Date } from '@/utils/common';
 import { Ionicons } from '@expo/vector-icons';
 
-const selectHeaderTitle = (pathname: string, formattedDate: string, _YYYY_MM_DD: string) => {
+const selectHeaderTitle = (pathname: string, _YYYY_MM_DD: string) => {
   if (pathname === '/files') return "History";
-  if (pathname === '/old_chat') return _YYYY_MM_DD;
-  return formattedDate;
+  let dateToFormat = new Date();
+  if (pathname === '/old_chat') {
+    dateToFormat = YYYY_MM_DD2Date(_YYYY_MM_DD);
+  }
+  const dateString = date2String(dateToFormat);
+  return `${dateString.weekday}, ${dateString.date}`;
 }
 
 const Header = () => {
@@ -20,7 +24,6 @@ const Header = () => {
   const pathname = usePathname();
   const { navigate } = useRouter();
   const { COLORS } = useTheme();
-  const formattedDate = date2String(new Date());
 
   return (
     <View style={{
@@ -39,7 +42,7 @@ const Header = () => {
       </View>
       <View style={{ width: '85%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingRight: '15%' }}>
         <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginBottom: 10 }}>
-          {selectHeaderTitle(pathname, `${formattedDate.weekday}, ${formattedDate.date}`, _YYYY_MM_DD)}
+          {selectHeaderTitle(pathname, _YYYY_MM_DD)}
         </Text>
       </View>
     </View >

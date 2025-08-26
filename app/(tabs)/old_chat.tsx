@@ -7,25 +7,26 @@ import { useHistory } from '@/contexts/HistoryContext';
 import { date2String } from '@/utils/common';
 
 const formatChatMessage = (message: ChatMessage) => {
-    return `${date2String(message.timestamp).time} - ${message.productCategory} ${message.productName} ${message.productQuantity}`;
+  return `${date2String(message.timestamp).time} - ${message.productCategory} ${message.productName} ${message.productQuantity}`;
 }
 
 const Chat = () => {
-    const { chatHistory } = useHistory();
+  const { chatHistory } = useHistory();
 
-    return (
-        <GestureHandlerRootView>
-            <ScrollView>
-                <View style={{ height: 400, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                    {chatHistory.map((chatHistoryElement, index) => (
-                        <View key={index} style={{ padding: 2, backgroundColor: '#444' }}>
-                            <Text style={{ color: 'white' }}>{formatChatMessage(chatHistoryElement)}</Text>
-                        </View>
-                    ))}
-                </View>
-            </ScrollView>
-        </GestureHandlerRootView>
-    )
+  return (
+    <GestureHandlerRootView>
+      <ScrollView
+        style={{ flexDirection: 'column', display: 'flex' }}
+        contentContainerStyle={{ overflow: 'scroll', flexGrow: 1, justifyContent: 'flex-start', padding: 20 }}
+      >
+        {chatHistory.map((chatHistoryElement, index) => (
+          <View key={index}>
+            <Text style={{ color: 'white' }}>{formatChatMessage(chatHistoryElement)}</Text>
+          </View>
+        ))}
+      </ScrollView>
+    </GestureHandlerRootView>
+  )
 }
 
 export default Chat;
