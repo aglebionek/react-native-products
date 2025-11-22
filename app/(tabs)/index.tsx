@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import { Keyboard, ToastAndroid, View } from "react-native";
 
-import { BaseProduct, ChatMessage, ProductCategory } from '@/@types';
+import { ChatMessage, Product, PRODUCT_TYPE, ProductCategory } from '@/@types';
 import { Input, SuggestionButton, Text } from '@/components';
 import { useHistory } from '@/contexts/HistoryContext';
 import { useProducts } from '@/contexts/ProductsContext';
@@ -17,20 +17,20 @@ enum States {
 
 const Chat = () => {
   const { chatHistory, handleAddChatMessage } = useHistory();
-  const { stickers, prints } = useProducts();
+  const { stickers, prints, setStickers, setPrints } = useProducts();
   const { COLORS } = useTheme();
   const [state, setState] = useState(States.SELECTING_CATEGORY);
 
   const [category, setCategory] = useState<ProductCategory | null>(null);
   const [inputValue, setInputValue] = useState('');
-  const [product, setProduct] = useState<BaseProduct | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
 
   const [categorySuggestions, setCategorySuggestions] = useState<ProductCategory[]>([]);
-  const [productSuggestions, setProductSuggestions] = useState<BaseProduct[]>([]);
+  const [productSuggestions, setProductSuggestions] = useState<Product[]>([]);
   const scrollRef = useRef<ScrollView>(null);
 
-  const productsCategories: Record<ProductCategory, BaseProduct[]> = {
+  const productsCategories: Record<ProductCategory, Product[]> = {
     "N": stickers,
     "A4": prints.filter(print => print.formats.includes('A4')),
     "A5": prints.filter(print => print.formats.includes('A5')),
@@ -58,7 +58,7 @@ const Chat = () => {
     setState(States.SELECTING_PRODUCT);
   }
 
-  const handleSetProduct = (product: BaseProduct) => {
+  const handleSetProduct = (product: Product) => {
     setProduct(product);
     setInputValue(`${category} ${product.name} ${quantity}`);
     setState(States.SELECTING_QUANTITY);
@@ -89,12 +89,28 @@ const Chat = () => {
       productCategory: category,
       timestamp
     };
-    handleAddChatMessage(newChatHistory);
-    handleSetDefaultStates();
 
     scrollRef.current?.scrollToEnd({ animated: true });
 
-    // TODO update product stock in products context
+    let updateFunction = null;
+    if (product.type === PRODUCT_TYPE.PRINT) {
+      const filteredPrints = prints.filter(p => p.name !== product.name);
+      product.stock -= quantity;
+      filteredPrints.push(product);
+      updateFunction = () => setPrints(filteredPrints);
+    } else if (product.type === PRODUCT_TYPE.NAKLEJKA) {
+      const updatedStickers = stickers.filter(p => p.name !== product.name);
+      product.stock -= quantity;
+      updatedStickers.push(product);
+      updateFunction = () => setStickers(updatedStickers);
+    }
+
+    if (updateFunction) {
+      updateFunction().then(() => {
+        handleAddChatMessage(newChatHistory);
+        handleSetDefaultStates();
+      });
+    }
   }
 
   const onChangeInputText = (inputText: string) => {
@@ -143,8 +159,8 @@ const Chat = () => {
           valuesToFilter = productsCategories[category as ProductCategory];
         }
 
-        filteredProducts = valuesToFilter.filter(sticker => {
-          return keywords.every((kw) => sticker.keywords.some((stickerKw) => stickerKw.toLowerCase().startsWith(kw.toLowerCase())));
+        filteredProducts = valuesToFilter.filter(product => product.stock > 0).filter(product => {
+          return keywords.every((kw) => product.keywords.some((productKw) => productKw.toLowerCase().startsWith(kw.toLowerCase())));
         });
         filteredProducts.sort((a, b) => {
           const aStartsWith = a.name.toLowerCase().startsWith(lastKeyword);
@@ -184,10 +200,11 @@ const Chat = () => {
           keyboardType={state === States.SELECTING_QUANTITY ? 'number-pad' : 'default'}
           blurOnSubmit={false}
           onSubmitEditing={onSubmitEditing}
+          id='transaction-input'
         />
 
         <View style={{ borderTopWidth: 1, borderColor: COLORS.borderColor, height: 0 }} />
-        
+
         <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ flexGrow: 1 }} persistentScrollbar={true} ref={scrollRef}
           indicatorStyle='white'
         >

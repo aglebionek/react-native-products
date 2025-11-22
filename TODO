@@ -1,6 +1,5 @@
 add clear input button
 Add/delete products
-Update product stock
 Delete confirmation modal
 Create a backup of products for loading issues (as to not overwrite existing data)
 Auto-create new products json on day change
