@@ -15,7 +15,7 @@ export const Colors = {
     tabIconSelected: highlightGold,
   },
   dark: {
-    text: '#cdcdcd',
+    text: '#efefef',
     backgroundStart: '#2B2746',
     backgroundMiddle: '#221D40',
     backgroundEnd: '#05040C',
