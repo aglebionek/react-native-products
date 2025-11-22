@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import { ToastAndroid, View } from "react-native";
 
@@ -26,6 +26,7 @@ const Chat = () => {
 
   const [categorySuggestions, setCategorySuggestions] = useState<ProductCategory[]>([]);
   const [productSuggestions, setProductSuggestions] = useState<BaseProduct[]>([]);
+  const scrollRef = useRef<ScrollView>(null);
 
   const { stickers, prints } = useProducts();
 
@@ -86,6 +87,8 @@ const Chat = () => {
     };
     handleAddChatMessage(newChatHistory);
     handleSetDefaultStates();
+
+    scrollRef.current?.scrollToEnd({ animated: true });
 
     // TODO update product stock in products context
   }
@@ -167,18 +170,10 @@ const Chat = () => {
   return (
     <GestureHandlerRootView>
 
-      <View style={{ height: '100%', flexDirection: 'column', justifyContent: 'flex-end' }}>
-
-        <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ flexGrow: 1 }}>
-          {chatHistory.map((chatHistoryElement, index) => (
-            <View key={index} style={{ padding: 2, backgroundColor: '#444' }}>
-              <Text style={{ color: 'white' }}>{formatChatMessage(chatHistoryElement)}</Text>
-            </View>
-          ))}
-        </ScrollView>
+      <View style={{ height: '100%', flexDirection: 'column', justifyContent: 'flex-end', padding: 10 }}>
 
         <Input
-          placeholder="Search..."
+          placeholder="New transaction"
           selection={state === States.SELECTING_QUANTITY ? { start: inputValue.length - 1, end: inputValue.length } : undefined}
           value={inputValue}
           onChangeText={onChangeInputText}
@@ -186,6 +181,15 @@ const Chat = () => {
           blurOnSubmit={false}
           onSubmitEditing={onSubmitEditing}
         />
+
+        <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ flexGrow: 1 }} persistentScrollbar={true} ref={scrollRef}>
+          {chatHistory.map((chatHistoryElement, index) => (
+            <View key={index} style={{ padding: 2, backgroundColor: '#444' }}>
+              <Text style={{ color: 'white' }}>{formatChatMessage(chatHistoryElement)}</Text>
+            </View>
+          ))}
+        </ScrollView>
+
 
         <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 20, height: 40, marginBottom: 10 }}>
           {state === States.SELECTING_CATEGORY && categorySuggestions.slice(0, 3).map((suggestion, index) => (
