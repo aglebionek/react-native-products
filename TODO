@@ -1,7 +1,13 @@
 add clear input button
-Add products
+Add/delete products
 Update product stock
-Delete product confirmation modal
+Delete confirmation modal
 Select all text on input if stock is 0
 Create a backup of products for loading issues (as to not overwrite existing data)
 Auto-create new products json on day change
+Add debounce to product searches
+Add option to remove old chat histories
+Improve chat UI
+Improve products UI
+Add option to clone a product
+Allow to edit existing keyword by long pressing it
