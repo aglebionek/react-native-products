@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
-import { ToastAndroid, View } from "react-native";
+import { Keyboard, ToastAndroid, View } from "react-native";
 
-import { ChatMessage, BaseProduct } from '@/@types';
-import { ProductCategory } from '@/@types';
+import { BaseProduct, ChatMessage, ProductCategory } from '@/@types';
 import { Input, SuggestionButton, Text } from '@/components';
 import { useHistory } from '@/contexts/HistoryContext';
 import { useProducts } from '@/contexts/ProductsContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { formatChatMessage, getCurrentDateInPolishTimezone } from '@/utils/common';
 
 enum States {
@@ -17,6 +17,8 @@ enum States {
 
 const Chat = () => {
   const { chatHistory, handleAddChatMessage } = useHistory();
+  const { stickers, prints } = useProducts();
+  const { COLORS } = useTheme();
   const [state, setState] = useState(States.SELECTING_CATEGORY);
 
   const [category, setCategory] = useState<ProductCategory | null>(null);
@@ -28,14 +30,16 @@ const Chat = () => {
   const [productSuggestions, setProductSuggestions] = useState<BaseProduct[]>([]);
   const scrollRef = useRef<ScrollView>(null);
 
-  const { stickers, prints } = useProducts();
-
   const productsCategories: Record<ProductCategory, BaseProduct[]> = {
     "N": stickers,
     "A4": prints.filter(print => print.formats.includes('A4')),
     "A5": prints.filter(print => print.formats.includes('A5')),
     "A6": prints.filter(print => print.formats.includes('A6')),
   }
+
+  Keyboard.addListener('keyboardDidShow', () => {
+    scrollRef.current?.scrollToEnd({ animated: true });
+  });
 
   const handleSetDefaultStates = () => {
     setInputValue('');
@@ -182,10 +186,14 @@ const Chat = () => {
           onSubmitEditing={onSubmitEditing}
         />
 
-        <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ flexGrow: 1 }} persistentScrollbar={true} ref={scrollRef}>
+        <View style={{ borderTopWidth: 1, borderColor: COLORS.borderColor, height: 0 }} />
+        
+        <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ flexGrow: 1 }} persistentScrollbar={true} ref={scrollRef}
+          indicatorStyle='white'
+        >
           {chatHistory.map((chatHistoryElement, index) => (
-            <View key={index} style={{ padding: 2, backgroundColor: '#444' }}>
-              <Text style={{ color: 'white' }}>{formatChatMessage(chatHistoryElement)}</Text>
+            <View key={index} style={{ marginVertical: 2 }}>
+              <Text style={{ color: 'white', borderBottomColor: index === chatHistory.length - 1 ? COLORS.borderColor : '#454545', borderBottomWidth: 1, padding: 2 }}>{formatChatMessage(chatHistoryElement)}</Text>
             </View>
           ))}
         </ScrollView>

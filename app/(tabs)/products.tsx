@@ -83,6 +83,7 @@ const BrowseProducts = () => {
                         placeholderTextColor="gray"
                         onChangeText={text => handleSearch(text)}
                         value={searchQuery}
+                        autoFocus
                     />
 
                     <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ paddingHorizontal: 10, flexGrow: 1 }}>
