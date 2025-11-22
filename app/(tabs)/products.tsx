@@ -1,16 +1,18 @@
-import { Product, PRODUCT_TYPE } from "@/@types";
-import { Button, Input, Text } from "@/components";
-import EditProductModal from "@/components/(tabs)/products/EditProductModal";
-import { NAVIGATION_VIEWS, useNavigationContext } from "@/contexts/NavigationContext";
-import { useProducts } from "@/contexts/ProductsContext";
-import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
 
+import { Product, PRODUCT_TYPE } from "@/@types";
+import { Input, Text } from "@/components";
+import EditProductModal from "@/components/(tabs)/products/EditProductModal";
+import { NAVIGATION_VIEWS, useNavigationContext } from "@/contexts/NavigationContext";
+import { useProducts } from "@/contexts/ProductsContext";
+import { useTheme } from "@/contexts/ThemeContext";
+
 const BrowseProducts = () => {
-    const { prints, stickers, setPrints, setStickers } = useProducts();
     const { currentNavigationView, setCurrentNavigationView } = useNavigationContext();
+    const { prints, stickers, setPrints, setStickers } = useProducts();
+    const { COLORS } = useTheme();
 
     const [selectedCategory, setSelectedCategory] = useState<'stickers' | 'prints' | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -83,30 +85,31 @@ const BrowseProducts = () => {
                         value={searchQuery}
                     />
 
-                    <Button title="Stickers" onPress={() => setSelectedCategory('stickers')} />
-                    <Button title="Prints" onPress={() => setSelectedCategory('prints')} />
-
-                    <ScrollView keyboardShouldPersistTaps="always">
+                    <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ paddingHorizontal: 10, flexGrow: 1 }}>
                         {selectedCategory === 'stickers' && (
                             <>
                                 {stickers.map((sticker, index) => (
-                                    <ProductRow key={index} product={sticker} handleEditProduct={handleEditProduct} handleDeleteProduct={handleDeleteProduct} />
-                                ))}
+                                    <View key={`sticker-${index}`} style={{ marginBottom: 10, display: 'flex', flexDirection: 'row', backgroundColor: COLORS.tabIconDefault, padding: 10 }} onTouchEnd={() => handleEditProduct(sticker)}>
+                                        <Text>{sticker.name} - {PRODUCT_TYPE[sticker.type]}</Text>
+                                    </View>))}
                             </>
                         )}
 
                         {selectedCategory === 'prints' && (
                             <>
                                 {prints.map((print, index) => (
-                                    <ProductRow key={index} product={print} handleEditProduct={handleEditProduct} handleDeleteProduct={handleDeleteProduct} />
-                                ))}
+                                    <View key={`print-${index}`} style={{ marginBottom: 10, display: 'flex', flexDirection: 'row', backgroundColor: COLORS.tabIconDefault, padding: 10 }} onTouchEnd={() => handleEditProduct(print)}>
+                                        <Text>{print.name} - {PRODUCT_TYPE[print.type]}</Text>
+                                    </View>))}
                             </>
                         )}
 
                         {searchResults.length > 0 && (
                             <>
                                 {searchResults.map((product, index) => (
-                                    <ProductRow key={index} product={product} handleEditProduct={handleEditProduct} handleDeleteProduct={handleDeleteProduct} />
+                                    <View  key={`product-${index}`}style={{ marginBottom: 10, display: 'flex', flexDirection: 'row', backgroundColor: COLORS.tabIconDefault, padding: 10 }} onTouchEnd={() => handleEditProduct(product)}>
+                                        <Text>{product.name} - {PRODUCT_TYPE[product.type]}</Text>
+                                    </View>
                                 ))}
                             </>
                         )}
@@ -117,28 +120,6 @@ const BrowseProducts = () => {
             {currentNavigationView === NAVIGATION_VIEWS.EDIT_PRODUCT && selectedProduct && (
                 <EditProductModal product={selectedProduct} onClose={handleModalOnClose} />
             )}
-        </View>
-    )
-}
-
-const ProductRow = ({ product, handleEditProduct, handleDeleteProduct }: { product: Product, handleEditProduct: (product: Product) => void, handleDeleteProduct: (product: Product) => void }) => {
-    return (
-        <View style={{ marginBottom: 10, display: 'flex', flexDirection: 'row' }}>
-            <Text style={{ color: 'white', width: '80%' }}>{product.name} - {PRODUCT_TYPE[product.type]}</Text>
-            <Ionicons
-                name="pencil"
-                size={20}
-                color="white"
-                style={{ width: '10%' }}
-                onPress={() => handleEditProduct(product)}
-            />
-            <Ionicons
-                name="trash"
-                size={20}
-                color="white"
-                style={{ width: '10%' }}
-                onPress={() => handleDeleteProduct(product)}
-            />
         </View>
     )
 }
