@@ -37,7 +37,6 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
         const stockNumber = parseInt(stock);
         if (isNaN(stockNumber)) {
             setProductClone(prev => ({ ...prev, stock: 0 }));
-            // TODO select all text in input
             return;
         }
         setProductClone(prev => ({ ...prev, stock: stockNumber }));
@@ -159,7 +158,7 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
 
                         <Text>Stock</Text>
                         <Input
-                            value={String(productClone.stock)}
+                            value={productClone.stock === 0 ? '' : String(productClone.stock)}
                             keyboardType="number-pad"
                             onChangeText={handleEditProductStock}
                         />
