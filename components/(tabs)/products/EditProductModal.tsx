@@ -1,6 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Modal, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 
 import { Product, PRODUCT_TYPE } from "@/@types";
 import { Checkbox, Input, Text } from "@/components";
@@ -16,10 +17,11 @@ interface EditProductProps {
 
 const EditProduct = ({ product, onClose }: EditProductProps) => {
     const { COLORS } = useTheme();
-    const [productClone, setProductClone] = useState<Product>(product);
-    // const productClone = { ...product } as Product;
-
     const { prints, stickers, setPrints, setStickers } = useProducts();
+
+    const [isAddingKeyword, setIsAddingKeyword] = useState(false);
+    const [newKeyword, setNewKeyword] = useState('');
+    const [productClone, setProductClone] = useState<Product>(product);
 
     const handleEditProductName = (name: string) => {
         setProductClone(prev => ({ ...prev, name }));
@@ -60,6 +62,8 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
     }
 
     const handleSaveProduct = async () => {
+        if (isAddingKeyword) return handleSaveNewKeyword();
+
         if (productClone.type === PRODUCT_TYPE.PRINT) {
             const filteredPrints = prints.filter(p => p.name !== product.name);
             filteredPrints.push(productClone);
@@ -72,89 +76,186 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
         onClose();
     }
 
+    const handleSaveNewKeyword = () => {
+        if (newKeyword.trim() === '') return;
+        if (productClone.keywords.includes(newKeyword.trim())) {
+            setNewKeyword('');
+            setIsAddingKeyword(false);
+            return;
+        }
+        const updatedKeywords = [...productClone.keywords, newKeyword.trim()];
+        setProductClone(prev => ({ ...prev, keywords: updatedKeywords }));
+        setNewKeyword('');
+        setIsAddingKeyword(false);
+    }
 
     return (
         <Modal animationType="slide" transparent={false} visible={true} >
             <LinearGradient colors={[COLORS.backgroundStart, COLORS.backgroundMiddle, COLORS.backgroundEnd]} style={{ flex: 1 }}>
-                <View style={{
-                    justifyContent: 'center', alignItems: 'flex-end', display: 'flex', flexDirection: 'row',
-                    borderBottomColor: COLORS.borderColor, borderBottomWidth: 1,
-                    width: '100%',
-                    marginBottom: 20,
-                }}>
-                    <View style={{ width: '85%', display: 'flex', justifyContent: 'center', alignItems: 'center', paddingLeft: '15%' }}>
-                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginBottom: 10 }}>
-                            EDIT {PRODUCT_TYPE[product.type]}
-                        </Text>
-                    </View>
-                    <View style={{ width: '15%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <Ionicons
-                            name="close"
-                            size={35}
-                            color={COLORS.tabIconSelected}
-                            style={{ marginBottom: 10 }}
-                            onPress={onClose}
-                        />
-                    </View>
-                </View >
+                <GestureHandlerRootView>
 
-                <View style={{ padding: 20 }}>
-                    <Text>Name</Text>
-                    <Input
-                        value={productClone.name}
-                        onChangeText={handleEditProductName}
-                    />
-
-                    {productClone.keywords && (
-                        <>
-                            <Text>Search keywords (comma separated)</Text>
-                            <Input
-                                value={productClone.keywords.join(', ')}
-                                onChangeText={handleEditProductKeywords}
+                    <View style={{
+                        justifyContent: 'center', alignItems: 'flex-end', display: 'flex', flexDirection: 'row',
+                        borderBottomColor: COLORS.borderColor, borderBottomWidth: 1,
+                        width: '100%',
+                        marginBottom: 20,
+                    }}>
+                        <View style={{ width: '85%', display: 'flex', justifyContent: 'center', alignItems: 'center', paddingLeft: '15%' }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginBottom: 10 }}>
+                                EDIT {PRODUCT_TYPE[product.type]}
+                            </Text>
+                        </View>
+                        <View style={{ width: '15%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <Ionicons
+                                name="close"
+                                size={35}
+                                color={COLORS.tabIconSelected}
+                                style={{ marginBottom: 10 }}
+                                onPress={onClose}
                             />
-                        </>
-                    )}
+                        </View>
+                    </View >
 
-                    <Text>Stock</Text>
-                    <Input
-                        value={String(productClone.stock)}
-                        keyboardType="number-pad"
-                        onChangeText={handleEditProductStock}
-                    />
+                    <View style={{ padding: 20 }}>
+                        <Text>Name</Text>
+                        <Input
+                            value={productClone.name}
+                            onChangeText={handleEditProductName}
+                        />
 
-                    {productClone.type === PRODUCT_TYPE.PRINT && (
-                        <>
-                            <Text>Formats</Text>
-                            <View style={{ flexDirection: 'row', marginBottom: 20 }}>
-                                {['A4', 'A5', 'A6'].map((format) => (
-                                    <View key={format} style={{ flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
-                                        <Checkbox
-                                            checked={productClone.formats.includes(format as 'A4' | 'A5' | 'A6')}
-                                            onPress={() => handleEditPrintFormat(format as 'A4' | 'A5' | 'A6')}
+                        {productClone.keywords && (
+                            <>
+                                <Text>Search keywords</Text>
+                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', display: 'flex', alignItems: 'center', marginVertical: 10, gap: 5 }}>
+                                    {productClone.keywords.map((keyword, index) => (
+                                        <KeywordTag
+                                            key={`keyword-tag-${index}`}
+                                            keyword={keyword}
+                                            removeKeyword={() => {
+                                                const newKeywords = productClone.keywords.filter(kw => kw !== keyword);
+                                                setProductClone(prev => ({ ...prev, keywords: newKeywords }));
+                                            }}
                                         />
-                                        <Text style={{ color: 'white', marginLeft: 5 }}>{format}</Text>
-                                    </View>
-                                ))}
-                            </View>
-                        </>
-                    )}
+                                    ))}
+                                    {isAddingKeyword ? (
+                                        <EditableKeywordTag
+                                            keyword={newKeyword}
+                                            onChangeKeyword={(newKw) => setNewKeyword(newKw.toLowerCase().trim())}
+                                            onSubmitEditing={handleSaveNewKeyword}
+                                        />
+                                    ) : (
+                                        <Ionicons
+                                            name="add-circle"
+                                            size={30}
+                                            color={COLORS.tabIconSelected}
+                                            onPress={() => {
+                                                setIsAddingKeyword(true);
+                                            }}
+                                        />
+                                    )}
+                                </View>
+                            </>
+                        )}
 
-                    {productClone.type === PRODUCT_TYPE.NAKLEJKA && (
-                        <>
-                            <Text>Holographic</Text>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+                        <Text>Stock</Text>
+                        <Input
+                            value={String(productClone.stock)}
+                            keyboardType="number-pad"
+                            onChangeText={handleEditProductStock}
+                        />
+
+                        {productClone.type === PRODUCT_TYPE.PRINT && (
+                            <>
+                                <Text>Formats</Text>
+                                <View style={{ flexDirection: 'row', marginBottom: 20 }}>
+                                    {['A4', 'A5', 'A6'].map((format) => (
+                                        <View key={format} style={{ flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
+                                            <Checkbox
+                                                checked={productClone.formats.includes(format as 'A4' | 'A5' | 'A6')}
+                                                onPress={() => handleEditPrintFormat(format as 'A4' | 'A5' | 'A6')}
+                                            />
+                                            <Text style={{ color: 'white', marginLeft: 5 }}>{format}</Text>
+                                        </View>
+                                    ))}
+                                </View>
+                            </>
+                        )}
+
+                        {productClone.type === PRODUCT_TYPE.NAKLEJKA && (
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 20 }}>
+                                <Text>Holographic</Text>
                                 <Checkbox
                                     checked={productClone.holo === true}
                                     onPress={handleEditStickerHolo}
                                 />
                             </View>
-                        </>
-                    )}
+                        )}
 
-                    <Button onPress={async () => await handleSaveProduct()} title="Save" />
-                </View>
+                        <Button onPress={async () => await handleSaveProduct()} title="Save" />
+                    </View>
+                </GestureHandlerRootView>
             </LinearGradient>
         </Modal>
+    )
+}
+
+const KeywordTag = ({ keyword, removeKeyword }: { keyword: string, removeKeyword: () => void }) => {
+    const { COLORS } = useTheme();
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [isLongPressed, setIsLongPressed] = useState(false);
+
+    return (
+        <TouchableOpacity
+            onPressOut={() => { 
+                // if (isLongPressed) editKeyword();
+             }}
+            onLongPress={() => setIsLongPressed(true)}
+        >
+            <View style={{
+                backgroundColor: COLORS.tabIconDefault,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                borderRadius: 15,
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginRight: 5,
+                marginBottom: 5,
+            }}
+            >
+                <Text style={{ color: 'white', marginRight: 5 }}>{keyword}</Text>
+                <Ionicons
+                    name="close-circle"
+                    size={24}
+                    color={COLORS.text}
+                    onPress={isLongPressed ? undefined : removeKeyword}
+                />
+            </View>
+        </TouchableOpacity>
+    )
+}
+
+const EditableKeywordTag = ({ keyword, onChangeKeyword, onSubmitEditing }: { keyword: string, onChangeKeyword: (newKeyword: string) => void, onSubmitEditing: () => void }) => {
+    const { COLORS } = useTheme();
+    return (
+        <View style={{
+            backgroundColor: COLORS.tabIconDefault,
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            borderRadius: 15,
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginRight: 5,
+            marginBottom: 5,
+        }}>
+            <Input
+                value={keyword}
+                onChangeText={onChangeKeyword}
+                style={{ color: 'white', marginRight: 5, minWidth: 50, height: 20, padding: 0 }}
+                autoFocus
+                onSubmitEditing={onSubmitEditing}
+            />
+        </View>
     )
 }
 
