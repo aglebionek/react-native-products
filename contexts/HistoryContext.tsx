@@ -41,12 +41,12 @@ export const HistoryProvider = ({ children }: { children: React.ReactNode }) => 
         const readChatHistory = async () => {
             try {
                 const cachedChatHistory = await readChatHistoryFromCache();
-                if (cachedChatHistory) {
-                    setChatHistory(JSON.parse(cachedChatHistory, (_, value) => {
-                        value.timestamp = new Date(value.timestamp);
-                        return value;
-                    }));
-                }
+                if (!cachedChatHistory) return setChatHistory([]);
+                
+                setChatHistory(JSON.parse(cachedChatHistory, (_, value) => {
+                    value.timestamp = new Date(value.timestamp);
+                    return value;
+                }));
             } catch (error) {
                 console.error(`[ERROR] HistoryProvider.readChatHistoryFromCache \n ${error}`);
             }

@@ -1,3 +1,5 @@
+import { ChatMessage } from "@/@types";
+
 export const date2String = (date: Date) => {
     if (!(date instanceof Date)) return { date: '', time: '', datetime: '', weekDay: '' };
     const options: Intl.DateTimeFormatOptions = {
@@ -43,4 +45,13 @@ export const getCurrentDateInPolishTimezone = (): Date => {
     const [day, month, year] = datePart.split('.').map(part => parseInt(part, 10));
     const [hours, minutes, seconds] = timePart.split(':').map(part => parseInt(part, 10));
     return new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds));
+}
+
+export const getCurrentDateInYYYY_MM_DD = (): string => {
+    const currentDate = getCurrentDateInPolishTimezone();
+    return date2YYYY_MM_DD(currentDate);
+}
+
+export const formatChatMessage = (message: ChatMessage) => {
+  return `${date2String(message.timestamp).time} - ${message.productCategory} ${message.productName} ${message.productQuantity}`;
 }

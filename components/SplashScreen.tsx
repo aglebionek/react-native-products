@@ -11,7 +11,7 @@ import { usePermissions } from '@/contexts/PermissionsContext';
 NativeSplash.preventAutoHideAsync();
 
 const SplashScreen = ({ children }: { children: React.ReactNode }) => {
-    const [loaded] = useFonts({ SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf') });
+    const [fontsLoaded] = useFonts({ SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf') });
     const { permissionsLoaded } = usePermissions();
     const { productsLoaded, productsLoadingError } = useProducts();
     const { themeLoaded } = useTheme();
@@ -19,12 +19,12 @@ const SplashScreen = ({ children }: { children: React.ReactNode }) => {
     const [loadedAllResources, setLoadedAllResources] = useState(false);
 
     useEffect(() => {
-        if (loaded && permissionsLoaded && productsLoaded && themeLoaded) {
+        if (fontsLoaded && permissionsLoaded && productsLoaded && themeLoaded) {
             setLoadedAllResources(true);
             NativeSplash.hideAsync();
         }
-    }, [loaded, permissionsLoaded, productsLoaded, themeLoaded]);
-
+    }, [fontsLoaded, permissionsLoaded, productsLoaded, themeLoaded]);
+    
     return (
         <>
             {loadedAllResources ? children : null}

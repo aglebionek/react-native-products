@@ -1,4 +1,4 @@
+import { ProductCategory, PRODUCT_TYPE, Product, Sticker, Print, BaseProduct } from './products';
+
 export { default as ChatMessage } from './history/Chat';
-export { default as Print } from './products/Print';
-export { default as Product } from './products/Product';
-export { default as Sticker } from './products/Sticker';
+export { ProductCategory, PRODUCT_TYPE, Product, Sticker, Print, BaseProduct };

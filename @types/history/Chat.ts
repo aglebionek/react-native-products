@@ -1,9 +1,8 @@
-import Product from "../products/Product";
-import ProductCategory from "../products/ProductCategory";
+import { ProductCategory, Product } from '../products';
 
 type ChatMessage = {
     productName: Product['name'];
-    productQuantity: Product['quantity'];
+    productQuantity: Product['stock'];
     productCategory: ProductCategory
     timestamp: Date;
 }

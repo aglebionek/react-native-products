@@ -1,22 +1,18 @@
 import { useState } from 'react';
-import { GestureHandlerRootView, ScrollView, TextInput } from 'react-native-gesture-handler';
+import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import { ToastAndroid, View } from "react-native";
 
-import { ChatMessage, Product } from '@/@types';
-import ProductCategory from '@/@types/products/ProductCategory';
-import { SuggestionButton, Text } from '@/components';
+import { ChatMessage, BaseProduct } from '@/@types';
+import { ProductCategory } from '@/@types';
+import { Input, SuggestionButton, Text } from '@/components';
 import { useHistory } from '@/contexts/HistoryContext';
 import { useProducts } from '@/contexts/ProductsContext';
-import { date2String, getCurrentDateInPolishTimezone } from '@/utils/common';
+import { formatChatMessage, getCurrentDateInPolishTimezone } from '@/utils/common';
 
 enum States {
   SELECTING_CATEGORY = 1,
   SELECTING_PRODUCT = 2,
   SELECTING_QUANTITY = 3,
-}
-
-const formatChatMessage = (message: ChatMessage) => {
-  return `${date2String(message.timestamp).time} - ${message.productCategory} ${message.productName} ${message.productQuantity}`;
 }
 
 const Chat = () => {
@@ -25,19 +21,19 @@ const Chat = () => {
 
   const [category, setCategory] = useState<ProductCategory | null>(null);
   const [inputValue, setInputValue] = useState('');
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<BaseProduct | null>(null);
   const [quantity, setQuantity] = useState(1);
 
   const [categorySuggestions, setCategorySuggestions] = useState<ProductCategory[]>([]);
-  const [productSuggestions, setProductSuggestions] = useState<Product[]>([]);
+  const [productSuggestions, setProductSuggestions] = useState<BaseProduct[]>([]);
 
   const { stickers, prints } = useProducts();
 
-  const productsCategories: Record<ProductCategory, Product[]> = {
+  const productsCategories: Record<ProductCategory, BaseProduct[]> = {
     "N": stickers,
-    "A4": prints,
-    "A5": prints,
-    "A6": prints,
+    "A4": prints.filter(print => print.formats.includes('A4')),
+    "A5": prints.filter(print => print.formats.includes('A5')),
+    "A6": prints.filter(print => print.formats.includes('A6')),
   }
 
   const handleSetDefaultStates = () => {
@@ -57,7 +53,7 @@ const Chat = () => {
     setState(States.SELECTING_PRODUCT);
   }
 
-  const handleSetProduct = (product: Product) => {
+  const handleSetProduct = (product: BaseProduct) => {
     setProduct(product);
     setInputValue(`${category} ${product.name} ${quantity}`);
     setState(States.SELECTING_QUANTITY);
@@ -67,6 +63,31 @@ const Chat = () => {
     setState(States.SELECTING_PRODUCT);
     setQuantity(1);
     setInputValue(inputValue.replace(/\s\d+$/, ''));
+  }
+
+  const onSubmitEditing = () => {
+    if (state !== States.SELECTING_QUANTITY) return;
+    if (!product) {
+      ToastAndroid.show('No product selected', ToastAndroid.SHORT);
+      return;
+    }
+    if (!category) {
+      ToastAndroid.show('No category selected', ToastAndroid.SHORT);
+      return;
+    }
+
+    const timestamp = getCurrentDateInPolishTimezone();
+
+    const newChatHistory: ChatMessage = {
+      productName: product.name,
+      productQuantity: quantity,
+      productCategory: category,
+      timestamp
+    };
+    handleAddChatMessage(newChatHistory);
+    handleSetDefaultStates();
+
+    // TODO update product stock in products context
   }
 
   const onChangeInputText = (inputText: string) => {
@@ -125,7 +146,7 @@ const Chat = () => {
           if (!aStartsWith && bStartsWith) return 1;
           return a.name.localeCompare(b.name);
         });
-        console.log(`Keyword selected: ${JSON.stringify(filteredProducts)}`);
+
         setProductSuggestions(filteredProducts);
         break;
       }
@@ -145,64 +166,36 @@ const Chat = () => {
 
   return (
     <GestureHandlerRootView>
-      <ScrollView keyboardShouldPersistTaps="always">
-        <View style={{ height: 400, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
 
+      <View style={{ height: '100%', flexDirection: 'column', justifyContent: 'flex-end' }}>
+
+        <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ flexGrow: 1 }}>
           {chatHistory.map((chatHistoryElement, index) => (
             <View key={index} style={{ padding: 2, backgroundColor: '#444' }}>
               <Text style={{ color: 'white' }}>{formatChatMessage(chatHistoryElement)}</Text>
             </View>
           ))}
+        </ScrollView>
 
-          <TextInput
-            placeholder="Search....."
-            style={{
-              height: 40,
-              borderColor: 'grey',
-              borderWidth: 1,
-              marginVertical: 10,
-              paddingHorizontal: 10,
-              color: 'white'
-            }}
-            selection={state === States.SELECTING_QUANTITY ? { start: inputValue.length - 1, end: inputValue.length } : undefined}
-            value={inputValue}
-            onChangeText={onChangeInputText}
-            keyboardType={state === States.SELECTING_QUANTITY ? 'number-pad' : 'default'}
-            blurOnSubmit={false}
-            onSubmitEditing={() => {
-              if (state !== States.SELECTING_QUANTITY) return;
-              if (!product) {
-                console.warn('No product selected');
-                return;
-              }
-              if (!category) {
-                console.warn('No category selected');
-                return;
-              }
+        <Input
+          placeholder="Search..."
+          selection={state === States.SELECTING_QUANTITY ? { start: inputValue.length - 1, end: inputValue.length } : undefined}
+          value={inputValue}
+          onChangeText={onChangeInputText}
+          keyboardType={state === States.SELECTING_QUANTITY ? 'number-pad' : 'default'}
+          blurOnSubmit={false}
+          onSubmitEditing={onSubmitEditing}
+        />
 
-              const timestamp = getCurrentDateInPolishTimezone();
-
-              const newChatHistory: ChatMessage = {
-                productName: product.name,
-                productQuantity: quantity,
-                productCategory: category,
-                timestamp
-              };
-              handleAddChatMessage(newChatHistory);
-              handleSetDefaultStates();
-            }}
-          />
-
-          <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 30, height: 50 }}>
-            {state === States.SELECTING_CATEGORY && categorySuggestions.slice(0, 3).map((suggestion, index) => (
-              <SuggestionButton key={`cat-sug-${index}`} onPress={() => handleSetCategory(suggestion)} text={suggestion} />
-            ))}
-            {state === States.SELECTING_PRODUCT && productSuggestions.slice(0, 3).map((suggestion, index) => (
-              <SuggestionButton key={`prod-sug-${index}`} onPress={() => handleSetProduct(suggestion)} text={suggestion.name} />
-            ))}
-          </View>
+        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 20, height: 40, marginBottom: 10 }}>
+          {state === States.SELECTING_CATEGORY && categorySuggestions.slice(0, 3).map((suggestion, index) => (
+            <SuggestionButton key={`cat-sug-${index}`} onPress={() => handleSetCategory(suggestion)} text={suggestion} />
+          ))}
+          {state === States.SELECTING_PRODUCT && productSuggestions.slice(0, 3).map((suggestion, index) => (
+            <SuggestionButton key={`prod-sug-${index}`} onPress={() => handleSetProduct(suggestion)} text={suggestion.name} />
+          ))}
         </View>
-      </ScrollView>
+      </View>
     </GestureHandlerRootView>
   )
 }
