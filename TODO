@@ -1,1 +1,7 @@
 add clear input button
+Add products
+Update product stock
+Delete product confirmation modal
+Select all text on input if stock is 0
+Create a backup of products for loading issues (as to not overwrite existing data)
+Auto-create new products json on day change

@@ -39,6 +39,7 @@ npm i && npm start
 npm i && npm run android
 ```
 2. This will create an app on your device that you can use to run the project directly. Note that the app will only work if the Metro bundler is running on your development machine.
+3. Sometimes the app might be stuck on the loading screen. In that case, try restarting the Metro bundler and reopening the app. If that doesn't work, uninstall the app from your device and run the command again to reinstall it.
 
 ## For production
 1. Run the following command in the terminal:
