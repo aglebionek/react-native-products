@@ -1,17 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
-import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
+import { Ionicons } from '@expo/vector-icons';
+import { startActivityAsync } from 'expo-intent-launcher';
+import { NotificationContentInput, NotificationResponse, NotificationTriggerInput } from 'expo-notifications';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, ToastAndroid, View } from "react-native";
+import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
 import { Text } from '@/components';
 import { useHistory } from '@/contexts/HistoryContext';
-import { Ionicons } from '@expo/vector-icons';
-import { usePermissions } from '@/contexts/PermissionsContext';
-import { useRouter } from 'expo-router';
-import { date2String, getCurrentDateInYYYY_MM_DD } from '@/utils/common';
-import useNotifications from '@/hooks/useNotifications';
-import { NotificationContentInput, NotificationResponse, NotificationTriggerInput } from 'expo-notifications';
-import { startActivityAsync } from 'expo-intent-launcher';
 import { NAVIGATION_VIEW_PATHNAMES, NAVIGATION_VIEWS, useNavigationContext } from '@/contexts/NavigationContext';
+import { usePermissions } from '@/contexts/PermissionsContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import useNotifications from '@/hooks/useNotifications';
+import { date2String, getCurrentDateInYYYY_MM_DD } from '@/utils/common';
 
 const extractYYYY_MM_DD = (filename: string) => {
   const match = filename.match(/chat_history_(\d{4}_\d{2}_\d{2})\.json/);
@@ -23,6 +24,7 @@ const Chat = () => {
   const { setCurrentNavigationView } = useNavigationContext();
   const { handleDownloadFile } = usePermissions();
   const { navigate } = useRouter();
+  const { COLORS } = useTheme();
 
   const onNotificationClicked = async (response: NotificationResponse) => {
     const data = response.notification.request.content.data;
@@ -103,11 +105,11 @@ const Chat = () => {
               </Text>
 
             </Pressable>
-            <View key={`chat-file-${index}`} style={{ width: '10%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ width: '10%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
               <Ionicons
                 name="arrow-down"
                 size={35}
-                style={{ marginBottom: 10 }}
+                style={{ marginBottom: 10, color: COLORS.tabIconSelected }}
                 onPress={() => handleDownloadCSV(chatHistoryElement)}
               />
             </View>
