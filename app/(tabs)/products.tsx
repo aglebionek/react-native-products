@@ -43,16 +43,21 @@ const BrowseProducts = () => {
     }
 
     const handleSearch = (query: string) => {
+        query = query.toLowerCase();
         setSearchQuery(query);
         setSelectedCategory(null);
+
         if (query.trim() === '') {
             setSearchResults([]);
             return;
         }
-        const lowerCaseQuery = query.toLowerCase();
-        const filteredResults = mergedProducts.filter(product =>
-            product.name.toLowerCase().includes(lowerCaseQuery) ||
-            product.keywords.some(keyword => keyword.toLowerCase().includes(lowerCaseQuery))
+
+        let valuesToFilter = searchResults;
+        if (valuesToFilter.length === 0) valuesToFilter = mergedProducts;
+        
+        const filteredResults = valuesToFilter.filter(product =>
+            product.name.toLowerCase().includes(query) ||
+            product.keywords.some(keyword => keyword.toLowerCase().includes(query))
         );
         setSearchResults(filteredResults);
     }
@@ -108,7 +113,7 @@ const BrowseProducts = () => {
                         {searchResults.length > 0 && (
                             <>
                                 {searchResults.map((product, index) => (
-                                    <View  key={`product-${index}`}style={{ marginBottom: 10, display: 'flex', flexDirection: 'row', backgroundColor: COLORS.tabIconDefault, padding: 10 }} onTouchEnd={() => handleEditProduct(product)}>
+                                    <View key={`product-${index}`} style={{ marginBottom: 10, display: 'flex', flexDirection: 'row', backgroundColor: COLORS.tabIconDefault, padding: 10 }} onTouchEnd={() => handleEditProduct(product)}>
                                         <Text>{product.name} - {PRODUCT_TYPE[product.type]}</Text>
                                     </View>
                                 ))}
