@@ -22,18 +22,16 @@ const selectHeaderTitle = (currentNavigationView: NAVIGATION_VIEWS, _YYYY_MM_DD:
     switch (currentNavigationView) {
         case NAVIGATION_VIEWS.OLD_CHATS_LIST:
             return "History";
+        case NAVIGATION_VIEWS.CURRENT_CHAT:
         case NAVIGATION_VIEWS.OLD_CHAT: {
             const oldDate = YYYY_MM_DD2Date(_YYYY_MM_DD);
             const dateString = date2String(oldDate);
-            return `(His) ${dateString.weekday}, ${dateString.date}`;
+            return `${dateString.weekday}, ${dateString.date}`;
         }
         case NAVIGATION_VIEWS.PRODUCTS_LIST:
             return "Products";
-        default: {
-            const currentDate = new Date();
-            const dateString = date2String(currentDate);
-            return `${dateString.weekday}, ${dateString.date}`;
-        }
+        default: 
+            return '';
     }
 }
 

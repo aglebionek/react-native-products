@@ -37,9 +37,9 @@ export const ProductsProvider = ({ children }: { children: React.ReactNode }) =>
         const readProductsDataFromCache = async () => {
             try {
                 const cachedStickers = await readStickersFromCache();
-                if (cachedStickers) return _setStickers(JSON.parse(cachedStickers));
+                if (cachedStickers) _setStickers(JSON.parse(cachedStickers));
                 // TODO: rewrite this to use a copy of the prints.json
-                _setStickers(defaultStickers);
+                else _setStickers(defaultStickers);
             } catch (error) {
                 console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readStickers \n ${error}`);
                 setProductsLoadingError('Failed to load stickers from cache.');
@@ -48,8 +48,9 @@ export const ProductsProvider = ({ children }: { children: React.ReactNode }) =>
 
             try {
                 const cachedPrints = await readPrintsFromCache();
-                if (cachedPrints) return _setPrints(JSON.parse(cachedPrints));
-                _setPrints(defaultPrints);
+                if (cachedPrints) _setPrints(JSON.parse(cachedPrints));
+                // TODO: rewrite this to use a copy of the prints.json
+                else _setPrints(defaultPrints);
             } catch (error) {
                 console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readPrints \n ${error}`);
                 setProductsLoadingError('Failed to load prints from cache.');

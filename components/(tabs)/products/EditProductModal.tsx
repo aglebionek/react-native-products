@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Modal, View } from "react-native";
+import { Keyboard, Modal, View } from "react-native";
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 
 import { Product, PRODUCT_TYPE } from "@/@types";
@@ -8,7 +8,7 @@ import { Checkbox, Input, Text } from "@/components";
 import { useProducts } from "@/contexts/ProductsContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/common/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface EditProductProps {
     product: Product,
@@ -25,12 +25,6 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
 
     const handleEditProductName = (name: string) => {
         setProductClone(prev => ({ ...prev, name }));
-    }
-
-    const handleEditProductKeywords = (keywords: string) => {
-        keywords = keywords.toLowerCase();
-        const keywordsArray = keywords.split(',').map(keyword => keyword.trim())
-        setProductClone(prev => ({ ...prev, keywords: keywordsArray }));
     }
 
     const handleEditProductStock = (stock: string) => {
@@ -75,8 +69,20 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
         onClose();
     }
 
+    const handleDeleteProduct = () => {
+        // TODO add a confirmation modal
+        if (product.type === PRODUCT_TYPE.NAKLEJKA) {
+            const updatedStickers = stickers.filter(p => p.name !== product.name);
+            setStickers(updatedStickers);
+        } else if (product.type === PRODUCT_TYPE.PRINT) {
+            const updatedPrints = prints.filter(p => p.name !== product.name);
+            setPrints(updatedPrints);
+        }
+        onClose();
+    }
+
     const handleSaveNewKeyword = () => {
-        if (newKeyword.trim() === '') return;
+        if (newKeyword.trim() === '') return setIsAddingKeyword(false);
         if (productClone.keywords.includes(newKeyword.trim())) {
             setNewKeyword('');
             setIsAddingKeyword(false);
@@ -98,9 +104,18 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
                         borderBottomColor: COLORS.borderColor, borderBottomWidth: 1,
                         width: '100%',
                         marginBottom: 20,
+                        paddingBottom: 10,
                     }}>
-                        <View style={{ width: '85%', display: 'flex', justifyContent: 'center', alignItems: 'center', paddingLeft: '15%' }}>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginBottom: 10 }}>
+                        <View style={{ width: '15%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <Ionicons
+                                name="trash"
+                                size={35}
+                                color={COLORS.tabIconSelected}
+                                onPress={handleDeleteProduct}
+                            />
+                        </View>
+                        <View style={{ width: '70%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>
                                 EDIT {PRODUCT_TYPE[product.type]}
                             </Text>
                         </View>
@@ -109,7 +124,6 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
                                 name="close"
                                 size={35}
                                 color={COLORS.tabIconSelected}
-                                style={{ marginBottom: 10 }}
                                 onPress={onClose}
                             />
                         </View>
@@ -130,6 +144,8 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
                                         <KeywordTag
                                             key={`keyword-tag-${index}`}
                                             keyword={keyword}
+                                            onChangeKeyword={(newKw) => setNewKeyword(newKw.toLowerCase().trim())}
+                                            onSubmitEditing={handleSaveNewKeyword}
                                             removeKeyword={() => {
                                                 const newKeywords = productClone.keywords.filter(kw => kw !== keyword);
                                                 setProductClone(prev => ({ ...prev, keywords: newKeywords }));
@@ -190,7 +206,7 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
                             </View>
                         )}
 
-                        <Button onPress={async () => await handleSaveProduct()} title="Save" />
+                        <Button onPress={async () => await handleSaveProduct()} title="Save" disabled={isAddingKeyword}/>
                     </View>
                 </GestureHandlerRootView>
             </LinearGradient>
@@ -198,17 +214,23 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
     )
 }
 
-const KeywordTag = ({ keyword, removeKeyword }: { keyword: string, removeKeyword: () => void }) => {
+const KeywordTag = ({ keyword, onChangeKeyword, onSubmitEditing, removeKeyword }: { keyword: string, onChangeKeyword: (newKeyword: string) => void, onSubmitEditing: () => void, removeKeyword: () => void }) => {
     const { COLORS } = useTheme();
 
-    const [isEditing, setIsEditing] = useState(false);
     const [isLongPressed, setIsLongPressed] = useState(false);
+
+    useEffect(() => {
+        Keyboard.addListener('keyboardDidHide', () => {
+            setIsLongPressed(false);
+            onSubmitEditing();
+        });
+    }, []);
 
     return (
         <TouchableOpacity
-            onPressOut={() => { 
+            onPressOut={() => {
                 // if (isLongPressed) editKeyword();
-             }}
+            }}
             onLongPress={() => setIsLongPressed(true)}
         >
             <View style={{
@@ -222,13 +244,39 @@ const KeywordTag = ({ keyword, removeKeyword }: { keyword: string, removeKeyword
                 marginBottom: 5,
             }}
             >
-                <Text style={{ color: 'white', marginRight: 5 }}>{keyword}</Text>
-                <Ionicons
-                    name="close-circle"
-                    size={24}
-                    color={COLORS.text}
-                    onPress={isLongPressed ? undefined : removeKeyword}
-                />
+                {isLongPressed ? (
+                    <>
+                        <Input
+                            value={keyword}
+                            onChangeText={onChangeKeyword}
+                            style={{ color: 'white', marginRight: 5, minWidth: 50, height: 20, padding: 0 }}
+                            autoFocus
+                            onSubmitEditing={() => {
+                                onSubmitEditing();
+                                setIsLongPressed(false);
+                            }}
+                            onBlur={() => setIsLongPressed(false)}
+                        />
+                        <Ionicons
+                            name="close-circle"
+                            size={24}
+                            color={COLORS.text}
+                            onPress={() => {
+                                onSubmitEditing();
+                                setIsLongPressed(false);
+                            }}
+                        /></>
+                ) : (
+                    <>
+                        <Text style={{ color: 'white', marginRight: 5 }}>{keyword}</Text>
+                        <Ionicons
+                            name="close-circle"
+                            size={24}
+                            color={COLORS.text}
+                            onPress={isLongPressed ? onSubmitEditing : removeKeyword}
+                        />
+                    </>
+                )}
             </View>
         </TouchableOpacity>
     )
@@ -253,6 +301,12 @@ const EditableKeywordTag = ({ keyword, onChangeKeyword, onSubmitEditing }: { key
                 style={{ color: 'white', marginRight: 5, minWidth: 50, height: 20, padding: 0 }}
                 autoFocus
                 onSubmitEditing={onSubmitEditing}
+            />
+            <Ionicons
+                name="close-circle"
+                size={24}
+                color={COLORS.text}
+                onPress={onSubmitEditing}
             />
         </View>
     )

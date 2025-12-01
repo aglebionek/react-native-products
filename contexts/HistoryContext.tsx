@@ -33,6 +33,7 @@ const HistoryContext = createContext<HistoryContextType>({
 
 export const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
     const [_YYYY_MM_DD, _setYYYY_MM_DD] = useState(date2YYYY_MM_DD(new Date()));
+    const [_storedMessages, _setStoredMessages] = useState<ChatMessage[]>([]);
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null });
     const { saveDataToCache: saveChatHistoryToCache, readFileFromCache: readChatHistoryFromCache, readAllFilesFromDirectory: readAllChatHistoryFiles } = useCache(`chat_history_${_YYYY_MM_DD}.json`, 'chat_history');
@@ -41,12 +42,14 @@ export const HistoryProvider = ({ children }: { children: React.ReactNode }) => 
         const readChatHistory = async () => {
             try {
                 const cachedChatHistory = await readChatHistoryFromCache();
-                if (!cachedChatHistory) return setChatHistory([]);
+                if (!cachedChatHistory) return setChatHistory(_storedMessages);
                 
                 setChatHistory(JSON.parse(cachedChatHistory, (_, value) => {
                     value.timestamp = new Date(value.timestamp);
                     return value;
                 }));
+
+                _setStoredMessages([]);
             } catch (error) {
                 console.error(`[ERROR] HistoryProvider.readChatHistoryFromCache \n ${error}`);
             }
@@ -57,14 +60,15 @@ export const HistoryProvider = ({ children }: { children: React.ReactNode }) => 
 
     const handleAddChatMessage = (message: ChatMessage) => {
         //     // TODO this doesn't work
-        // const YYYY_MM_DD = formatDateToYYYY_MM_DD(message.timestamp);
-        // console.log(`YYYY_MM_DD: ${YYYY_MM_DD}, _YYYY_MM_DD: ${_YYYY_MM_DD}`);
-        // if (YYYY_MM_DD !== _YYYY_MM_DD) {
-        //     _setYYYY_MM_DD(YYYY_MM_DD);
-        //     const newChatHistory = [message];
-        //     setChatHistory(newChatHistory);
-        //     saveChatHistoryToCache(JSON.stringify(newChatHistory));
-        //     return;
+        // set message.timestamp to tomorrow's date for testing
+        // message.timestamp = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+        // const currentYYYY_MM_DD = date2YYYY_MM_DD(message.timestamp);
+        // const selectedDateYYYY_MM_DD = _YYYY_MM_DD;
+        // console.log({ selectedDateYYYY_MM_DD, currentYYYY_MM_DD });
+        // if (selectedDateYYYY_MM_DD !== currentYYYY_MM_DD) {
+        //     _setYYYY_MM_DD(currentYYYY_MM_DD);
+        //     _setStoredMessages([message]);
+        //     return [];
         // }
         setChatHistory(prev => {
             const newChatHistory = [...prev, message];

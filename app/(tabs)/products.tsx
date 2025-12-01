@@ -52,25 +52,14 @@ const BrowseProducts = () => {
             return;
         }
 
-        let valuesToFilter = searchResults;
-        if (valuesToFilter.length === 0) valuesToFilter = mergedProducts;
+        // let valuesToFilter = searchResults;
+        // if (valuesToFilter.length === 0) valuesToFilter = mergedProducts;
         
-        const filteredResults = valuesToFilter.filter(product =>
+        const filteredResults = mergedProducts.filter(product =>
             product.name.toLowerCase().includes(query) ||
             product.keywords.some(keyword => keyword.toLowerCase().includes(query))
         );
         setSearchResults(filteredResults);
-    }
-
-    const handleDeleteProduct = (product: Product) => {
-        // TODO add a confirmation modal
-        if (product.type === PRODUCT_TYPE.NAKLEJKA) {
-            const updatedStickers = stickers.filter(p => p.name !== product.name);
-            setStickers(updatedStickers);
-        } else if (product.type === PRODUCT_TYPE.PRINT) {
-            const updatedPrints = prints.filter(p => p.name !== product.name);
-            setPrints(updatedPrints);
-        }
     }
 
     useEffect(() => {
