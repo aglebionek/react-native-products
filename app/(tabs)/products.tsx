@@ -43,18 +43,16 @@ const BrowseProducts = () => {
     }
 
     const handleSearch = (query: string) => {
-        query = query.toLowerCase();
         setSearchQuery(query);
         setSelectedCategory(null);
-
         if (query.trim() === '') {
             setSearchResults([]);
             return;
         }
-
+        const lowerCaseQuery = query.toLowerCase();
         const filteredResults = mergedProducts.filter(product =>
-            product.name.toLowerCase().includes(query) ||
-            product.keywords.some(keyword => keyword.toLowerCase().includes(query))
+            product.name.toLowerCase().split(' ').includes(lowerCaseQuery) ||
+            product.keywords.some(keyword => keyword.toLowerCase().startsWith(lowerCaseQuery))
         );
         setSearchResults(filteredResults);
     }
