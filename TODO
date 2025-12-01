@@ -5,8 +5,6 @@ Add option to clone a product
 Create a backup of products for loading issues (as to not overwrite existing data)
 
 ## Secondary
-Allow to edit existing keyword by long pressing it
-add clear input button
 Auto-create new products json on day change
 Add option to remove old chat histories
 Improve products UI

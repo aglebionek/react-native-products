@@ -52,9 +52,6 @@ const BrowseProducts = () => {
             return;
         }
 
-        // let valuesToFilter = searchResults;
-        // if (valuesToFilter.length === 0) valuesToFilter = mergedProducts;
-        
         const filteredResults = mergedProducts.filter(product =>
             product.name.toLowerCase().includes(query) ||
             product.keywords.some(keyword => keyword.toLowerCase().includes(query))
@@ -78,6 +75,7 @@ const BrowseProducts = () => {
                         onChangeText={text => handleSearch(text)}
                         value={searchQuery}
                         autoFocus
+                        includeClearButton={true}
                     />
 
                     <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ paddingHorizontal: 10, flexGrow: 1 }}>

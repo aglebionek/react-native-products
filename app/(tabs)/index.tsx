@@ -201,6 +201,7 @@ const Chat = () => {
           blurOnSubmit={false}
           onSubmitEditing={onSubmitEditing}
           id='transaction-input'
+          includeClearButton={true}
         />
 
         <View style={{ borderTopWidth: 1, borderColor: COLORS.borderColor, height: 0 }} />
