@@ -11,11 +11,12 @@ import { Button } from "@/components/common/Button";
 import { useEffect, useState } from "react";
 
 interface EditProductProps {
+    handleCloneProduct: () => void,
     product: Product,
     onClose: () => void
 }
 
-const EditProduct = ({ product, onClose }: EditProductProps) => {
+const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps) => {
     const { COLORS } = useTheme();
     const { prints, stickers, setPrints, setStickers } = useProducts();
 
@@ -106,20 +107,26 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
                         marginBottom: 20,
                         paddingBottom: 10,
                     }}>
-                        <View style={{ width: '15%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{ width: '25%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 10 }}>
                             <Ionicons
                                 name="trash"
-                                size={35}
+                                size={30}
                                 color={COLORS.tabIconSelected}
                                 onPress={handleDeleteProduct}
                             />
+                            <Ionicons
+                                name="copy"
+                                size={30}
+                                color={COLORS.tabIconSelected}
+                                onPress={handleCloneProduct}
+                            />
                         </View>
-                        <View style={{ width: '70%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{ width: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>
                                 EDIT {PRODUCT_TYPE[product.type]}
                             </Text>
                         </View>
-                        <View style={{ width: '15%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{ width: '25%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <Ionicons
                                 name="close"
                                 size={35}
@@ -208,7 +215,7 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
                             </View>
                         )}
 
-                        <Button onPress={async () => await handleSaveProduct()} title="Save" disabled={isAddingKeyword}/>
+                        <Button onPress={async () => await handleSaveProduct()} title="Save" disabled={isAddingKeyword} />
                     </View>
                 </GestureHandlerRootView>
             </LinearGradient>

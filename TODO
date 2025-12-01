@@ -1,10 +1,10 @@
 ## Critical
 Delete confirmation modal
-Add/delete products
-Add option to clone a product
+Add products
 Create a backup of products for loading issues (as to not overwrite existing data)
 
 ## Secondary
+Fix original keyword restoring on keyboard hide
 Auto-create new products json on day change
 Add option to remove old chat histories
 Improve products UI

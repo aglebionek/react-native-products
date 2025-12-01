@@ -1,6 +1,6 @@
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, ToastAndroid, View } from "react-native";
 
 import { Product, PRODUCT_TYPE } from "@/@types";
 import { Input, Text } from "@/components";
@@ -57,6 +57,27 @@ const BrowseProducts = () => {
         setSearchResults(filteredResults);
     }
 
+    const handleCloneProduct = () => {
+        const productToClone = { ...selectedProduct } as Product | null;
+        if (!productToClone) return;
+
+        productToClone.name = `${productToClone.name} - COPY`;
+
+        if (productToClone.type === PRODUCT_TYPE.NAKLEJKA) {
+            const updatedStickers = [...stickers, productToClone];
+            setStickers(updatedStickers);
+        }
+
+        if (productToClone.type === PRODUCT_TYPE.PRINT) {
+            const updatedPrints = [...prints, productToClone];
+            setPrints(updatedPrints);
+        }
+
+        handleModalOnClose();
+
+        ToastAndroid.show(`Created ${productToClone.name}`, ToastAndroid.SHORT);
+    }
+
     useEffect(() => {
         if (searchQuery.trim() !== '') {
             handleSearch(searchQuery);
@@ -109,7 +130,7 @@ const BrowseProducts = () => {
             )}
 
             {currentNavigationView === NAVIGATION_VIEWS.EDIT_PRODUCT && selectedProduct && (
-                <EditProductModal product={selectedProduct} onClose={handleModalOnClose} />
+                <EditProductModal product={selectedProduct} onClose={handleModalOnClose} handleCloneProduct={handleCloneProduct} />
             )}
         </View>
     )
