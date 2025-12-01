@@ -4,7 +4,7 @@ import { Keyboard, Modal, View } from "react-native";
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 
 import { Product, PRODUCT_TYPE } from "@/@types";
-import { Checkbox, Input, Text } from "@/components";
+import { Checkbox, ConfirmModal, Input, Text } from "@/components";
 import { useProducts } from "@/contexts/ProductsContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/common/Button";
@@ -20,6 +20,7 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
     const { COLORS } = useTheme();
     const { prints, stickers, setPrints, setStickers } = useProducts();
 
+    const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
     const [isAddingKeyword, setIsAddingKeyword] = useState(false);
     const [newKeyword, setNewKeyword] = useState('');
     const [productClone, setProductClone] = useState<Product>(product);
@@ -80,6 +81,7 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
             setPrints(updatedPrints);
         }
         onClose();
+        setIsConfirmDeleteModalOpen(false);
     }
 
     const handleSaveNewKeyword = () => {
@@ -112,7 +114,7 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
                                 name="trash"
                                 size={30}
                                 color={COLORS.tabIconSelected}
-                                onPress={handleDeleteProduct}
+                                onPress={() => setIsConfirmDeleteModalOpen(true)}
                             />
                             <Ionicons
                                 name="copy"
@@ -216,6 +218,15 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
                         )}
 
                         <Button onPress={async () => await handleSaveProduct()} title="Save" disabled={isAddingKeyword} />
+
+                        {isConfirmDeleteModalOpen && (
+                            <ConfirmModal 
+                                title="Confirm Delete"
+                                text="Are you sure you want to delete this product?"
+                                onConfirm={handleDeleteProduct}
+                                onCancel={() => setIsConfirmDeleteModalOpen(false)}
+                            />
+                        )}
                     </View>
                 </GestureHandlerRootView>
             </LinearGradient>
