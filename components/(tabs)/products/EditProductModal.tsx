@@ -144,8 +144,10 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
                                         <KeywordTag
                                             key={`keyword-tag-${index}`}
                                             keyword={keyword}
-                                            onChangeKeyword={(newKw) => setNewKeyword(newKw.toLowerCase().trim())}
-                                            onSubmitEditing={handleSaveNewKeyword}
+                                            onChangeKeyword={(newKw) => {
+                                                const newKeywords = productClone.keywords.map(kw => kw === keyword ? newKw.toLowerCase().trim() : kw);
+                                                setProductClone(prev => ({ ...prev, keywords: newKeywords }));
+                                            }}
                                             removeKeyword={() => {
                                                 const newKeywords = productClone.keywords.filter(kw => kw !== keyword);
                                                 setProductClone(prev => ({ ...prev, keywords: newKeywords }));
@@ -214,7 +216,7 @@ const EditProduct = ({ product, onClose }: EditProductProps) => {
     )
 }
 
-const KeywordTag = ({ keyword, onChangeKeyword, onSubmitEditing, removeKeyword }: { keyword: string, onChangeKeyword: (newKeyword: string) => void, onSubmitEditing: () => void, removeKeyword: () => void }) => {
+const KeywordTag = ({ keyword, onChangeKeyword, removeKeyword }: { keyword: string, onChangeKeyword: (newKeyword: string) => void, removeKeyword: () => void }) => {
     const { COLORS } = useTheme();
 
     const [isLongPressed, setIsLongPressed] = useState(false);
@@ -222,15 +224,11 @@ const KeywordTag = ({ keyword, onChangeKeyword, onSubmitEditing, removeKeyword }
     useEffect(() => {
         Keyboard.addListener('keyboardDidHide', () => {
             setIsLongPressed(false);
-            onSubmitEditing();
         });
     }, []);
 
     return (
         <TouchableOpacity
-            onPressOut={() => {
-                // if (isLongPressed) editKeyword();
-            }}
             onLongPress={() => setIsLongPressed(true)}
         >
             <View style={{
@@ -252,17 +250,14 @@ const KeywordTag = ({ keyword, onChangeKeyword, onSubmitEditing, removeKeyword }
                             style={{ color: 'white', marginRight: 5, minWidth: 50, height: 20, padding: 0 }}
                             autoFocus
                             onSubmitEditing={() => {
-                                onSubmitEditing();
                                 setIsLongPressed(false);
                             }}
-                            onBlur={() => setIsLongPressed(false)}
                         />
                         <Ionicons
                             name="close-circle"
                             size={24}
                             color={COLORS.text}
                             onPress={() => {
-                                onSubmitEditing();
                                 setIsLongPressed(false);
                             }}
                         /></>
@@ -273,7 +268,7 @@ const KeywordTag = ({ keyword, onChangeKeyword, onSubmitEditing, removeKeyword }
                             name="close-circle"
                             size={24}
                             color={COLORS.text}
-                            onPress={isLongPressed ? onSubmitEditing : removeKeyword}
+                            onPress={isLongPressed ? undefined : removeKeyword}
                         />
                     </>
                 )}
