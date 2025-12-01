@@ -3,7 +3,7 @@ import { TextInput as NativeTextInput, View, type TextInputProps } from 'react-n
 
 import { useTheme } from '@/contexts/ThemeContext';
 
-export const Input = ({ includeClearButton = false, ...props }: TextInputProps & { includeClearButton?: boolean }) => {
+export const Input = ({ includeClearButton = false, innerRef, ...props }: TextInputProps & { includeClearButton?: boolean, innerRef?: any }) => {
     const { COLORS } = useTheme();
 
     if (!includeClearButton) {
@@ -18,6 +18,7 @@ export const Input = ({ includeClearButton = false, ...props }: TextInputProps &
                 paddingLeft: 10,
             }}
             {...props}
+            ref={innerRef}
         />
     }
 
@@ -37,6 +38,7 @@ export const Input = ({ includeClearButton = false, ...props }: TextInputProps &
                 color: COLORS.text,
             }}
             {...props}
+            ref={innerRef}
         />
         <Ionicons
             name="close-circle"

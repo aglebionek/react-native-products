@@ -107,7 +107,7 @@ const Header = () => {
             </View>
             <View style={{ width: '15%', display: 'flex', justifyContent: 'center', alignItems: 'center' }} onTouchEnd={handleRightIconPress}>
                 <Ionicons
-                    name={pathname === '/products' ? 'close' : 'pencil'}
+                    name={pathname === '/products' ? 'chatbubble' : 'pencil'}
                     size={35}
                     color={COLORS.tabIconSelected}
                     style={{ marginBottom: 10 }}

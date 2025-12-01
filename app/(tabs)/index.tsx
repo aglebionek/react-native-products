@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
-import { Keyboard, ToastAndroid, View } from "react-native";
+import { Keyboard, TextInput, ToastAndroid, View } from "react-native";
 
 import { ChatMessage, Product, PRODUCT_TYPE, ProductCategory } from '@/@types';
 import { Input, SuggestionButton, Text } from '@/components';
@@ -29,6 +30,13 @@ const Chat = () => {
   const [categorySuggestions, setCategorySuggestions] = useState<ProductCategory[]>([]);
   const [productSuggestions, setProductSuggestions] = useState<Product[]>([]);
   const scrollRef = useRef<ScrollView>(null);
+  const inputRef = useRef<TextInput>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      inputRef.current?.focus();
+    }, [])
+  );
 
   const productsCategories: Record<ProductCategory, Product[]> = {
     "N": stickers,
@@ -202,6 +210,7 @@ const Chat = () => {
           onSubmitEditing={onSubmitEditing}
           id='transaction-input'
           includeClearButton={true}
+          innerRef={inputRef}
         />
 
         <View style={{ borderTopWidth: 1, borderColor: COLORS.borderColor, height: 0 }} />
