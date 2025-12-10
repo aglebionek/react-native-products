@@ -1,6 +1,6 @@
 ## Critical
-Add products
 Create a backup of products for loading issues (as to not overwrite existing data)
+Add options to edit/remove transactions
 
 ## Secondary
 Fix original keyword restoring on keyboard hide

@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
@@ -219,8 +220,24 @@ const Chat = () => {
           indicatorStyle='white'
         >
           {chatHistory.map((chatHistoryElement, index) => (
-            <View key={index} style={{ marginVertical: 2 }}>
-              <Text style={{ color: 'white', borderBottomColor: index === chatHistory.length - 1 ? COLORS.borderColor : '#454545', borderBottomWidth: 1, padding: 2 }}>{formatChatMessage(chatHistoryElement)}</Text>
+            <View key={index} style={{ marginVertical: 2, flexDirection: 'row', borderBottomColor: index === chatHistory.length - 1 ? COLORS.borderColor : '#454545', borderBottomWidth: 1, }}>
+              <Text style={{ color: 'white', padding: 2, width: '80%' }}>
+                {formatChatMessage(chatHistoryElement)}
+              </Text>
+              <Ionicons
+                name='pencil'
+                size={20}
+                color='white'
+                style={{ marginLeft: 5, alignSelf: 'center' }}
+                onPress={() => console.log('Edit message')}
+              />
+              <Ionicons
+                name='trash'
+                size={20}
+                color='white'
+                style={{ marginLeft: 20, alignSelf: 'center' }}
+                onPress={() => console.log('Delete message')}
+              />
             </View>
           ))}
         </ScrollView>

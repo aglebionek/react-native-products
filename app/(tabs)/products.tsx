@@ -1,9 +1,11 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { ScrollView, ToastAndroid, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ScrollView, TextInput, ToastAndroid, View } from "react-native";
 
 import { Product, PRODUCT_TYPE } from "@/@types";
 import { Input, Text } from "@/components";
+import AddProduct from "@/components/(tabs)/products/AddProductModal";
 import EditProductModal from "@/components/(tabs)/products/EditProductModal";
 import { NAVIGATION_VIEWS, useNavigationContext } from "@/contexts/NavigationContext";
 import { useProducts } from "@/contexts/ProductsContext";
@@ -20,6 +22,16 @@ const BrowseProducts = () => {
     const [searchResults, setSearchResults] = useState<Product[]>([]);
 
     const mergedProducts = useMemo(() => [...stickers, ...prints], [stickers, prints]);
+
+    const inputRef = useRef<TextInput>(null);
+
+    useFocusEffect(
+        useCallback(() => {
+            setTimeout(() => {
+                inputRef.current?.focus();
+            }, 50);
+        }, [])
+    );
 
     useFocusEffect(
         useCallback(() => {
@@ -40,6 +52,11 @@ const BrowseProducts = () => {
     const handleEditProduct = (product: Product) => {
         setSelectedProduct(product);
         setCurrentNavigationView(NAVIGATION_VIEWS.EDIT_PRODUCT);
+    }
+
+    const handleAddProduct = () => {
+        setSelectedProduct(null);
+        setCurrentNavigationView(NAVIGATION_VIEWS.ADD_PRODUCT);
     }
 
     const handleSearch = (query: string) => {
@@ -88,14 +105,27 @@ const BrowseProducts = () => {
         <View style={{ padding: 10 }}>
             {(currentNavigationView === NAVIGATION_VIEWS.PRODUCTS_LIST || currentNavigationView === NAVIGATION_VIEWS.EDIT_PRODUCT) && (
                 <View>
-                    <Input
-                        placeholder="Search products"
-                        placeholderTextColor="gray"
-                        onChangeText={text => handleSearch(text)}
-                        value={searchQuery}
-                        autoFocus
-                        includeClearButton={true}
-                    />
+                    <View style={{ flexDirection: 'row', height: 40, gap: 5, marginBottom: 10 }}>
+                        <View style={{ width: '90%' }}>
+                            <Input
+                                placeholder="Search products"
+                                placeholderTextColor="gray"
+                                onChangeText={text => handleSearch(text)}
+                                value={searchQuery}
+                                includeClearButton={true}
+                                style={{ color: 'white' }}
+                                innerRef={inputRef}
+                            />
+                        </View>
+                        <View style={{ width: '10%', justifyContent: 'center', alignItems: 'center' }}>
+                            <Ionicons
+                                name="add-circle"
+                                size={35}
+                                color={COLORS.tabIconSelected}
+                                onPress={handleAddProduct}
+                            />
+                        </View>
+                    </View>
 
                     <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ paddingHorizontal: 10, flexGrow: 1 }}>
                         {selectedCategory === 'stickers' && (
@@ -127,12 +157,21 @@ const BrowseProducts = () => {
                         )}
                     </ScrollView>
                 </View>
-            )}
+            )
+            }
 
-            {currentNavigationView === NAVIGATION_VIEWS.EDIT_PRODUCT && selectedProduct && (
-                <EditProductModal product={selectedProduct} onClose={handleModalOnClose} handleCloneProduct={handleCloneProduct} />
-            )}
-        </View>
+            {
+                currentNavigationView === NAVIGATION_VIEWS.EDIT_PRODUCT && selectedProduct && (
+                    <EditProductModal product={selectedProduct} onClose={handleModalOnClose} handleCloneProduct={handleCloneProduct} />
+                )
+            }
+
+            {
+                currentNavigationView === NAVIGATION_VIEWS.ADD_PRODUCT && (
+                    <AddProduct onClose={handleModalOnClose} />
+                )
+            }
+        </View >
     )
 }
 

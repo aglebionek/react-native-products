@@ -31,15 +31,17 @@ export const Input = ({ includeClearButton = false, innerRef, ...props }: TextIn
         marginBottom: 20,
         paddingLeft: 10,
     }}>
-        <NativeTextInput
-            placeholderTextColor="gray"
-            style={{
-                flex: 1,
-                color: COLORS.text,
-            }}
-            {...props}
-            ref={innerRef}
-        />
+        <View style={{ width: '90%' }}>
+            <NativeTextInput
+                placeholderTextColor="gray"
+                style={{
+                    width: '100%',
+                    color: COLORS.text,
+                }}
+                {...props}
+                ref={innerRef}
+            />
+        </View>
         <Ionicons
             name="close-circle"
             size={20}
@@ -47,7 +49,7 @@ export const Input = ({ includeClearButton = false, innerRef, ...props }: TextIn
             onPress={() => {
                 if (props.onChangeText) props.onChangeText('');
             }}
-            style={{ marginRight: 10 }}
+            style={{ width: '10%' }}
         />
-    </View>
+    </View >
 }
