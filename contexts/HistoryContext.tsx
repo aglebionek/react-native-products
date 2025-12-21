@@ -13,6 +13,8 @@ type HistoryContextType = {
     chatHistory: ChatMessage[];
     dateRange: DateRange;
     handleAddChatMessage: (message: ChatMessage) => void;
+    handleDeleteChatMessage: (message: ChatMessage) => void;
+    handleEditChatMessage: (newMessage: ChatMessage) => void;
     readAllChatHistoryFiles: () => Promise<string[]>;
     setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
     setDateRange: React.Dispatch<React.SetStateAction<DateRange>>;
@@ -24,6 +26,8 @@ const HistoryContext = createContext<HistoryContextType>({
     chatHistory: [],
     dateRange: { start: null, end: null },
     handleAddChatMessage: () => { },
+    handleDeleteChatMessage: () => { },
+    handleEditChatMessage: () => { },
     readAllChatHistoryFiles: () => Promise.resolve([]),
     setChatHistory: () => { },
     setDateRange: () => { },
@@ -43,7 +47,7 @@ export const HistoryProvider = ({ children }: { children: React.ReactNode }) => 
             try {
                 const cachedChatHistory = await readChatHistoryFromCache();
                 if (!cachedChatHistory) return setChatHistory(_storedMessages);
-                
+
                 setChatHistory(JSON.parse(cachedChatHistory, (_, value) => {
                     value.timestamp = new Date(value.timestamp);
                     return value;
@@ -77,11 +81,25 @@ export const HistoryProvider = ({ children }: { children: React.ReactNode }) => 
         });
     }
 
+    const handleDeleteChatMessage = (message: ChatMessage) => {
+        const newChatHistory = chatHistory.filter(m => m.timestamp !== message.timestamp);
+        setChatHistory(newChatHistory);
+        saveChatHistoryToCache(JSON.stringify(newChatHistory));
+    }
+
+    const handleEditChatMessage = (newMessage: ChatMessage) => {
+        const newChatHistory = chatHistory.map(m => m.timestamp === newMessage.timestamp ? newMessage : m);
+        setChatHistory(newChatHistory);
+        saveChatHistoryToCache(JSON.stringify(newChatHistory));
+    }
+
     return (
         <HistoryContext.Provider value={{
             chatHistory,
             dateRange,
             handleAddChatMessage,
+            handleDeleteChatMessage,
+            handleEditChatMessage,
             readAllChatHistoryFiles,
             setChatHistory,
             setDateRange,

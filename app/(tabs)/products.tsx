@@ -29,7 +29,7 @@ const BrowseProducts = () => {
         useCallback(() => {
             setTimeout(() => {
                 inputRef.current?.focus();
-            }, 50);
+            }, 100);
         }, [])
     );
 

@@ -1,11 +1,11 @@
 ## Critical
 Create a backup of products for loading issues (as to not overwrite existing data)
-Add options to edit/remove transactions
 
 ## Secondary
 Fix original keyword restoring on keyboard hide
 Auto-create new products json on day change
 Add option to remove old chat histories
+Rename ChatMessage/History to Transaction
 Improve products UI
 Improve history chat UI
 Improve file list UI
