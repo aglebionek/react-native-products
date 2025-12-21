@@ -87,10 +87,10 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
         inputText = inputText.replace(/[^a-zA-Z0-9 ]/g, '')
         const parts = inputText.split(' ').filter(part => part.length > 0);
         setInputValue(inputText);
+        if (inputText.length === 0) return handleSetDefaultStates();
 
         switch (inputState) {
             case InputStates.SELECTING_CATEGORY: {
-                if (inputText.length === 0) return handleSetDefaultStates();
                 inputText = inputText.toUpperCase();
 
                 if (inputText in productsCategories) return handleSetCategory(inputText as ProductCategory);
