@@ -47,6 +47,9 @@ const BrowseProducts = () => {
     const handleModalOnClose = () => {
         setCurrentNavigationView(NAVIGATION_VIEWS.PRODUCTS_LIST);
         setSelectedProduct(null);
+        setTimeout(() => {
+            inputRef.current?.focus();
+        }, 100);
     }
 
     const handleEditProduct = (product: Product) => {

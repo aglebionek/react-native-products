@@ -3,12 +3,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Keyboard, Modal, View } from "react-native";
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 
-import { Product, PRODUCT_TYPE } from "@/@types";
+import { PrintFormat, Product, PRODUCT_TYPE } from "@/@types";
 import { Checkbox, ConfirmModal, Input, Text } from "@/components";
-import { useProducts } from "@/contexts/ProductsContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/common/Button";
 import { useEffect, useState } from "react";
+import useManageProducts from "@/stories/useManageProducts";
 
 interface EditProductProps {
     handleCloneProduct: () => void,
@@ -18,7 +18,7 @@ interface EditProductProps {
 
 const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps) => {
     const { COLORS } = useTheme();
-    const { prints, stickers, setPrints, setStickers } = useProducts();
+    const productManager = useManageProducts();
 
     const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
     const [isAddingKeyword, setIsAddingKeyword] = useState(false);
@@ -38,48 +38,25 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
         setProductClone(prev => ({ ...prev, stock: stockNumber }));
     }
 
-    const handleEditPrintFormat = (format: 'A4' | 'A5' | 'A6') => {
-        if (productClone.type !== PRODUCT_TYPE.PRINT) return;
-
-        if (productClone.formats.includes(format)) {
-            productClone.formats = productClone.formats.filter(f => f !== format);
-        } else {
-            productClone.formats.push(format);
-        }
+    const handleEditPrintFormat = (format: PrintFormat) => {
+        productManager.mutations.handleChangePrintFormat(productClone, format);
         setProductClone({ ...productClone });
     }
 
     const handleEditStickerHolo = () => {
         if (productClone.type !== PRODUCT_TYPE.NAKLEJKA) return;
-
         productClone.holo = !productClone.holo;
         setProductClone({ ...productClone });
     }
 
     const handleSaveProduct = async () => {
         if (isAddingKeyword) return handleSaveNewKeyword();
-
-        if (productClone.type === PRODUCT_TYPE.PRINT) {
-            const filteredPrints = prints.filter(p => p.name !== product.name);
-            filteredPrints.push(productClone);
-            await setPrints(filteredPrints);
-        } else if (product.type === PRODUCT_TYPE.NAKLEJKA) {
-            const updatedStickers = stickers.filter(p => p.name !== product.name);
-            updatedStickers.push(productClone);
-            await setStickers(updatedStickers);
-        }
+        await productManager.handleUpdateExistingProduct(productClone);
         onClose();
     }
 
     const handleDeleteProduct = () => {
-        // TODO add a confirmation modal
-        if (product.type === PRODUCT_TYPE.NAKLEJKA) {
-            const updatedStickers = stickers.filter(p => p.name !== product.name);
-            setStickers(updatedStickers);
-        } else if (product.type === PRODUCT_TYPE.PRINT) {
-            const updatedPrints = prints.filter(p => p.name !== product.name);
-            setPrints(updatedPrints);
-        }
+        productManager.handleDeleteProduct(productClone);
         onClose();
         setIsConfirmDeleteModalOpen(false);
     }

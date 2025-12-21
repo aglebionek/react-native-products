@@ -3,7 +3,9 @@ enum PRODUCT_TYPE {
     NAKLEJKA = 1,
 }
 
-type ProductCategory = 'N' | 'A4' | 'A5' | 'A6';
+type PrintFormat = 'A4' | 'A5' | 'A6';
+
+type ProductCategory = 'N' | PrintFormat;
 
 type BaseProduct = {
     name: string;
@@ -23,4 +25,4 @@ type Sticker = BaseProduct & {
 
 type Product = Print | Sticker;
 
-export { ProductCategory, PRODUCT_TYPE, Product, Sticker, Print, BaseProduct };
+export { ProductCategory, PRODUCT_TYPE, Product, Sticker, Print, BaseProduct, PrintFormat };

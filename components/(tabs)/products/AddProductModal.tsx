@@ -5,10 +5,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Keyboard, Modal, TextInput, View } from "react-native";
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 
-import { BaseProduct, Print, Product, PRODUCT_TYPE, Sticker } from "@/@types";
+import { BaseProduct, Print, PrintFormat, Product, PRODUCT_TYPE, Sticker } from "@/@types";
 import { Button, Checkbox, Input, Text } from "@/components";
-import { useProducts } from "@/contexts/ProductsContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import useManageProducts from "@/stories/useManageProducts";
 
 interface AddProductProps {
     onClose: () => void
@@ -16,7 +16,7 @@ interface AddProductProps {
 
 const AddProduct = ({ onClose }: AddProductProps) => {
     const { COLORS } = useTheme();
-    const { prints, stickers, setPrints, setStickers } = useProducts();
+    const productManager = useManageProducts();
 
     const [isAddingKeyword, setIsAddingKeyword] = useState(false);
     const [newKeyword, setNewKeyword] = useState('');
@@ -33,7 +33,7 @@ const AddProduct = ({ onClose }: AddProductProps) => {
         useCallback(() => {
             setTimeout(() => {
                 inputRef.current?.focus();
-            }, 50);
+            }, 100);
         }, [])
     );
 
@@ -50,14 +50,8 @@ const AddProduct = ({ onClose }: AddProductProps) => {
         setNewProduct(prev => ({ ...prev, stock: stockNumber }));
     }
 
-    const handleEditPrintFormat = (format: 'A4' | 'A5' | 'A6') => {
-        const product = newProduct as Product;
-        if (product.type !== PRODUCT_TYPE.PRINT) return;
-        if (product.formats.includes(format)) {
-            product.formats = product.formats.filter(f => f !== format);
-        } else {
-            product.formats.push(format);
-        }
+    const handleEditPrintFormat = (format: PrintFormat) => {
+        const product = productManager.mutations.handleChangePrintFormat(newProduct as Product, format);
         setNewProduct({ ...product });
     }
 
@@ -91,15 +85,7 @@ const AddProduct = ({ onClose }: AddProductProps) => {
 
     const handleSaveProduct = async () => {
         if (isAddingKeyword) return handleSaveNewKeyword();
-        let product = newProduct as Product;
-
-        if (product.type === PRODUCT_TYPE.PRINT) {
-            const updatedPrints = [...prints, product];
-            await setPrints(updatedPrints);
-        } else if (product.type === PRODUCT_TYPE.NAKLEJKA) {
-            const updatedStickers = [...stickers, product];
-            await setStickers(updatedStickers);
-        }
+        await productManager.handleAddNewProduct(newProduct as Product);
         onClose();
     }
 
