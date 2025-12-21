@@ -2,7 +2,7 @@ import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler
 import { View } from "react-native";
 
 import { Text } from '@/components';
-import { useHistory } from '@/contexts/HistoryContext';
+import { useHistory } from '@/contexts/TransactionsContext';
 import { formatChatMessage } from '@/utils/common';
 
 const Chat = () => {

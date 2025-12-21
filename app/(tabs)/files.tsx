@@ -7,7 +7,7 @@ import { Pressable, ToastAndroid, View } from "react-native";
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
 import { Text } from '@/components';
-import { useHistory } from '@/contexts/HistoryContext';
+import { useHistory } from '@/contexts/TransactionsContext';
 import { NAVIGATION_VIEW_PATHNAMES, NAVIGATION_VIEWS, useNavigationContext } from '@/contexts/NavigationContext';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useTheme } from '@/contexts/ThemeContext';

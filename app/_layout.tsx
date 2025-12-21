@@ -4,7 +4,7 @@ import { SplashScreen } from '@/components';
 import Header from '@/components/navigation/Header';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ProductsProvider } from '@/contexts/ProductsContext';
-import { HistoryProvider } from '@/contexts/HistoryContext';
+import { TransactionsProvider } from '@/contexts/TransactionsContext';
 import { PermissionsProvider } from '@/contexts/PermissionsContext';
 import { NavigationProvider} from '@/contexts/NavigationContext';
 
@@ -15,7 +15,7 @@ export default function RootLayout() {
     <PermissionsProvider>
       <ThemeProvider>
         <ProductsProvider>
-          <HistoryProvider>
+          <TransactionsProvider>
             <NavigationProvider>
               <SplashScreen>
                 <Stack>
@@ -29,7 +29,7 @@ export default function RootLayout() {
                 </Stack>
               </SplashScreen>
             </NavigationProvider>
-          </HistoryProvider>
+          </TransactionsProvider>
         </ProductsProvider>
       </ThemeProvider>
     </PermissionsProvider>

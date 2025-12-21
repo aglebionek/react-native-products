@@ -1,5 +1,5 @@
 import { ChatMessage, Product, PRODUCT_TYPE, ProductCategory } from "@/@types";
-import { useHistory } from "@/contexts/HistoryContext";
+import { useHistory } from "@/contexts/TransactionsContext";
 import { useProducts } from "@/contexts/ProductsContext";
 import { getCurrentDateInPolishTimezone } from "@/utils/common";
 import { useFocusEffect } from "expo-router";

@@ -3,7 +3,7 @@ import { useRouter, usePathname } from 'expo-router';
 import { View } from 'react-native';
 
 import { Text } from '@/components';
-import { useHistory } from '@/contexts/HistoryContext';
+import { useHistory } from '@/contexts/TransactionsContext';
 import { NAVIGATION_VIEWS, useNavigationContext, NAVIGATION_VIEW_PATHNAMES } from '@/contexts/NavigationContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { date2String, getCurrentDateInYYYY_MM_DD, YYYY_MM_DD2Date } from '@/utils/common';

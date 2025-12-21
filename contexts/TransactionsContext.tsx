@@ -9,7 +9,7 @@ type DateRange = {
     end: Date | null;
 };
 
-type HistoryContextType = {
+type TransactionsContextType = {
     chatHistory: ChatMessage[];
     dateRange: DateRange;
     handleAddChatMessage: (message: ChatMessage) => void;
@@ -22,7 +22,7 @@ type HistoryContextType = {
     _YYYY_MM_DD: string;
 };
 
-const HistoryContext = createContext<HistoryContextType>({
+const TransactionsContext = createContext<TransactionsContextType>({
     chatHistory: [],
     dateRange: { start: null, end: null },
     handleAddChatMessage: () => { },
@@ -35,7 +35,7 @@ const HistoryContext = createContext<HistoryContextType>({
     _YYYY_MM_DD: ""
 });
 
-export const HistoryProvider = ({ children }: { children: React.ReactNode }) => {
+export const TransactionsProvider = ({ children }: { children: React.ReactNode }) => {
     const [_YYYY_MM_DD, _setYYYY_MM_DD] = useState(date2YYYY_MM_DD(new Date()));
     const [_storedMessages, _setStoredMessages] = useState<ChatMessage[]>([]);
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
@@ -94,7 +94,7 @@ export const HistoryProvider = ({ children }: { children: React.ReactNode }) => 
     }
 
     return (
-        <HistoryContext.Provider value={{
+        <TransactionsContext.Provider value={{
             chatHistory,
             dateRange,
             handleAddChatMessage,
@@ -107,8 +107,8 @@ export const HistoryProvider = ({ children }: { children: React.ReactNode }) => 
             _YYYY_MM_DD
         }}>
             {children}
-        </HistoryContext.Provider>
+        </TransactionsContext.Provider>
     )
 }
 
-export const useHistory = () => useContext(HistoryContext);
+export const useHistory = () => useContext(TransactionsContext);
