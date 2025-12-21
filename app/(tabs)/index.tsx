@@ -6,7 +6,7 @@ import { Keyboard, TextInput, View } from "react-native";
 
 import { ChatMessage } from '@/@types';
 import { ConfirmModal, Input, SuggestionButton, Text } from '@/components';
-import { useHistory } from '@/contexts/HistoryContext';
+import { useHistory } from '@/contexts/TransactionsContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { formatChatMessage } from '@/utils/common';
 import { InputStates, useTransactionInput } from '@/stories/useTransactionInput';
@@ -113,10 +113,12 @@ const Chat = () => {
                 handleDeleteChatMessage(transactionSelectedForEditOrRemoval);
                 setIsConfirmDeleteModalOpen(false);
                 setTransactionSelectedForEditOrRemoval(null);
+                inputRef.current?.focus();
               }}
               onCancel={() => {
                 setIsConfirmDeleteModalOpen(false);
                 setTransactionSelectedForEditOrRemoval(null);
+                inputRef.current?.focus();
               }}
             />
           )}
@@ -128,10 +130,12 @@ const Chat = () => {
               onConfirm={() => {
                 setIsEditingTransaction(false);
                 setTransactionSelectedForEditOrRemoval(null);
+                inputRef.current?.focus();
               }}
               onCancel={() => {
                 setIsEditingTransaction(false);
                 setTransactionSelectedForEditOrRemoval(null);
+                inputRef.current?.focus();
               }}
             />
           )}
