@@ -1,5 +1,6 @@
 ## Critical
 Create a backup of products for loading issues (as to not overwrite existing data)
+fix chat history downloading the current history and not the one clicked
 
 ## Secondary
 Fix original keyword restoring on keyboard hide
