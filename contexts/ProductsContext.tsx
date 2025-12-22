@@ -1,11 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-import { Print, Sticker } from '@/@types';
+import { Keychain, Print, Sticker } from '@/@types';
 import defaultPrints from '@/constants/products/prints.default';
 import defaultStickers from '@/constants/products/stickers.default';
 import useCache from "@/hooks/useCache";
+import defaultKeychains from "@/constants/products/keychains.default";
 
 type ProductsContextProvider = {
+    keychains: Keychain[];
+    setKeychains: (keychains: Keychain[]) => Promise<void>;
     prints: Print[];
     setPrints: (prints: Print[]) => Promise<void>;
     stickers: Sticker[];
@@ -15,6 +18,8 @@ type ProductsContextProvider = {
 }
 
 const ProductsContext = createContext<ProductsContextProvider>({
+    keychains: [],
+    setKeychains: async () => {},
     prints: [],
     setPrints: async () => {},
     stickers: [],
@@ -24,9 +29,11 @@ const ProductsContext = createContext<ProductsContextProvider>({
 })
 
 export const ProductsProvider = ({ children }: { children: React.ReactNode }) => {
+    const { readFileFromCache: readKeychainsFromCache, saveDataToCache: saveKeychainsToCache } = useCache('keychains.json');
     const { readFileFromCache: readPrintsFromCache, saveDataToCache: savePrintsToCache } = useCache('prints.json');
     const { readFileFromCache: readStickersFromCache, saveDataToCache: saveStickersToCache } = useCache('stickers.json');
 
+    const [keychains, _setKeychains] = useState<Keychain[]>([]);
     const [prints, _setPrints] = useState<Print[]>([]);
     const [stickers, _setStickers] = useState<Sticker[]>([]);
 
@@ -57,11 +64,27 @@ export const ProductsProvider = ({ children }: { children: React.ReactNode }) =>
                 return;
             }
 
+            try {
+                const cachedKeychains = await readKeychainsFromCache();
+                if (cachedKeychains) _setKeychains(JSON.parse(cachedKeychains));
+                // TODO: rewrite this to use a copy of the keychains.json
+                else _setKeychains(defaultKeychains);
+            } catch (error) {
+                console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readKeychains \n ${error}`);
+                setProductsLoadingError('Failed to load keychains from cache.');
+                return;
+            }
+
             setProductsLoaded(true);
         }
 
         readProductsDataFromCache();
     }, []);
+
+    const setKeychains = async (keychains: Keychain[]) => {
+        _setKeychains(keychains);
+        await saveKeychainsToCache(JSON.stringify(keychains));
+    }
 
     const setPrints = async (prints: Print[]) => {
         _setPrints(prints);
@@ -74,7 +97,7 @@ export const ProductsProvider = ({ children }: { children: React.ReactNode }) =>
     }
 
     return (
-        <ProductsContext.Provider value={{ prints, setPrints, stickers, setStickers, productsLoaded, productsLoadingError }}>
+        <ProductsContext.Provider value={{ keychains, setKeychains, prints, setPrints, stickers, setStickers, productsLoaded, productsLoadingError }}>
             {children}
         </ProductsContext.Provider>
     )

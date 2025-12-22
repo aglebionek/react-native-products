@@ -3,7 +3,7 @@ import { PrintFormat } from "@/@types/products";
 import { useProducts } from "@/contexts/ProductsContext";
 
 const useManageProducts = () => {
-    const { prints, stickers, setPrints, setStickers } = useProducts();
+    const { keychains, prints, stickers, setKeychains, setPrints, setStickers } = useProducts();
 
     const handleAddNewProduct = async (product: Product) => {
         if (product.type === PRODUCT_TYPE.PRINT) {
@@ -12,6 +12,9 @@ const useManageProducts = () => {
         } else if (product.type === PRODUCT_TYPE.NAKLEJKA) {
             const updatedStickers = [...stickers, product];
             await setStickers(updatedStickers);
+        } else if (product.type === PRODUCT_TYPE.BRELOCZEK) {
+            const updatedKeychains = [...keychains, product];
+            await setKeychains(updatedKeychains);
         }
     };
 
@@ -22,18 +25,22 @@ const useManageProducts = () => {
         } else if (product.type === PRODUCT_TYPE.NAKLEJKA) {
             const updatedStickers = stickers.filter(p => p.name !== product.name);
             await setStickers(updatedStickers);
+        } else if (product.type === PRODUCT_TYPE.BRELOCZEK) {
+            const updatedKeychains = keychains.filter(p => p.name !== product.name);
+            await setKeychains(updatedKeychains);
         }
     };
 
-    const handleUpdateExistingProduct = async (product: Product) => {
-        if (product.type === PRODUCT_TYPE.PRINT) {
-            const filteredPrints = prints.filter(p => p.name !== product.name);
-            filteredPrints.push(product);
-            await setPrints(filteredPrints);
-        } else if (product.type === PRODUCT_TYPE.NAKLEJKA) {
-            const updatedStickers = stickers.filter(p => p.name !== product.name);
-            updatedStickers.push(product);
+    const handleUpdateExistingProduct = async (oldProduct: Product, newProduct: Product) => {
+        if (oldProduct.type === PRODUCT_TYPE.PRINT && newProduct.type === PRODUCT_TYPE.PRINT) {
+            const updatedPrints = prints.map(p => p.name === oldProduct.name ? newProduct : p);
+            await setPrints(updatedPrints);
+        } else if (oldProduct.type === PRODUCT_TYPE.NAKLEJKA && newProduct.type === PRODUCT_TYPE.NAKLEJKA) {
+            const updatedStickers = stickers.map(p => p.name === oldProduct.name ? newProduct : p);
             await setStickers(updatedStickers);
+        } else if (oldProduct.type === PRODUCT_TYPE.BRELOCZEK && newProduct.type === PRODUCT_TYPE.BRELOCZEK) {
+            const updatedKeychains = keychains.map(p => p.name === oldProduct.name ? newProduct : p);
+            await setKeychains(updatedKeychains);
         }
     }
 

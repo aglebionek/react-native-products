@@ -1,4 +1,4 @@
-import { Print, PRODUCT_TYPE} from "@/@types";
+import { Print, PRODUCT_TYPE } from "@/@types";
 
 const defaultPrints: Print[] = [
   // ALIEN STAGE
@@ -28,9 +28,7 @@ const defaultPrints: Print[] = [
   // VOCALOIDS
   { name: "Echo", formats: ['A6', 'A5'], keywords: ['echo', 'vocaloid'], stock: 1, type: PRODUCT_TYPE.PRINT },
   { name: "Monitoring Miku", formats: ['A6', 'A5'], keywords: ['monitoring', 'miku', 'hatsune', 'vocaloid'], stock: 1, type: PRODUCT_TYPE.PRINT },
-  { name: "Spooky Miku", formats: ['A6', 'A5'], keywords: ['spooky', 'miku', 'hatsune', 'vocaloid'], stock: 1, type: PRODUCT_TYPE.PRINT },
-
-
+  { name: "Marshmallow Miku", formats: ['A6', 'A5'], keywords: ['marshmallow', 'miku', 'hatsune', 'vocaloid'], stock: 1, type: PRODUCT_TYPE.PRINT },
 ]
 
 export default defaultPrints;

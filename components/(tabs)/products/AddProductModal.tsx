@@ -81,6 +81,14 @@ const AddProduct = ({ onClose }: AddProductProps) => {
             }));
             return;
         }
+
+        if (type === PRODUCT_TYPE.BRELOCZEK) {
+            setNewProduct((prev) => ({
+                ...prev,
+                type: PRODUCT_TYPE.BRELOCZEK,
+            }));
+            return;
+        }
     }
 
     const handleSaveProduct = async () => {
@@ -186,6 +194,10 @@ const AddProduct = ({ onClose }: AddProductProps) => {
 
                         <Text>Product Type</Text>
                         <View style={{ flexDirection: 'row', marginBottom: 20, display: 'flex', gap: 10 }}>
+                            <Button
+                                title="Keychain"
+                                onPress={() => handleSelectProductType(PRODUCT_TYPE.BRELOCZEK)}
+                            />
                             <Button
                                 title="Print"
                                 onPress={() => handleSelectProductType(PRODUCT_TYPE.PRINT)}

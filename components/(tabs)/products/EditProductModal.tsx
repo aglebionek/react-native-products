@@ -51,7 +51,7 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
 
     const handleSaveProduct = async () => {
         if (isAddingKeyword) return handleSaveNewKeyword();
-        await productManager.handleUpdateExistingProduct(productClone);
+        await productManager.handleUpdateExistingProduct(product, productClone);
         onClose();
     }
 

@@ -13,15 +13,15 @@ import { useTheme } from "@/contexts/ThemeContext";
 
 const BrowseProducts = () => {
     const { currentNavigationView, setCurrentNavigationView } = useNavigationContext();
-    const { prints, stickers, setPrints, setStickers } = useProducts();
+    const { keychains, prints, stickers, setKeychains, setPrints, setStickers } = useProducts();
     const { COLORS } = useTheme();
 
-    const [selectedCategory, setSelectedCategory] = useState<'stickers' | 'prints' | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<'keychains' |'stickers' | 'prints' | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<Product[]>([]);
 
-    const mergedProducts = useMemo(() => [...stickers, ...prints], [stickers, prints]);
+    const mergedProducts = useMemo(() => [...keychains, ...stickers, ...prints], [keychains, stickers, prints]);
 
     const inputRef = useRef<TextInput>(null);
 
@@ -93,6 +93,11 @@ const BrowseProducts = () => {
             setPrints(updatedPrints);
         }
 
+        if (productToClone.type === PRODUCT_TYPE.BRELOCZEK) {
+            const updatedKeychains = [...keychains, productToClone];
+            setKeychains(updatedKeychains);
+        }
+
         handleModalOnClose();
 
         ToastAndroid.show(`Created ${productToClone.name}`, ToastAndroid.SHORT);
@@ -145,6 +150,15 @@ const BrowseProducts = () => {
                                 {prints.map((print, index) => (
                                     <View key={`print-${index}`} style={{ marginBottom: 10, display: 'flex', flexDirection: 'row', backgroundColor: COLORS.tabIconDefault, padding: 10 }} onTouchEnd={() => handleEditProduct(print)}>
                                         <Text>{print.name} - {PRODUCT_TYPE[print.type]}</Text>
+                                    </View>))}
+                            </>
+                        )}
+
+                        {selectedCategory === 'keychains' && (
+                            <>
+                                {keychains.map((keychain, index) => (
+                                    <View key={`keychain-${index}`} style={{ marginBottom: 10, display: 'flex', flexDirection: 'row', backgroundColor: COLORS.tabIconDefault, padding: 10 }} onTouchEnd={() => handleEditProduct(keychain)}>
+                                        <Text>{keychain.name} - {PRODUCT_TYPE[keychain.type]}</Text>
                                     </View>))}
                             </>
                         )}

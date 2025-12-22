@@ -22,7 +22,7 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
 
     const { handleAddChatMessage, handleEditChatMessage } = useTransactions();
 
-    const { stickers, prints, setStickers, setPrints } = useProducts();
+    const { keychains, stickers, prints, setKeychains, setStickers, setPrints } = useProducts();
     const [inputState, setInputState] = useState(InputStates.SELECTING_CATEGORY);
 
     const [category, setCategory] = useState<ProductCategory | null>(initialCategory);
@@ -33,11 +33,12 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
     const [productSuggestions, setProductSuggestions] = useState<Product[]>([]);
 
     const productsCategories: Record<ProductCategory, Product[]> = useMemo(() => ({
-        "N": stickers,
         "A4": prints.filter(print => print.formats.includes('A4')),
         "A5": prints.filter(print => print.formats.includes('A5')),
         "A6": prints.filter(print => print.formats.includes('A6')),
-    }), [stickers, prints]);
+        "B": keychains,
+        "N": stickers,
+    }), [keychains, stickers, prints]);
 
     useFocusEffect(
         useCallback(() => {
@@ -185,6 +186,11 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
             product.stock -= quantity;
             updatedStickers.push(product);
             updateFunction = () => setStickers(updatedStickers);
+        } else if (product.type === PRODUCT_TYPE.BRELOCZEK) {
+            const updatedKeychains = keychains.filter(p => p.name !== product.name);
+            product.stock -= quantity;
+            updatedKeychains.push(product);
+            updateFunction = () => setKeychains(updatedKeychains);
         }
 
         if (updateFunction) {
