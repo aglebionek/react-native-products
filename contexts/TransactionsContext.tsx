@@ -16,6 +16,7 @@ type TransactionsContextType = {
     handleDeleteChatMessage: (message: ChatMessage) => void;
     handleEditChatMessage: (newMessage: ChatMessage) => void;
     readAllTransactionsFiles: () => Promise<string[]>;
+    readTransactionsByFilename: (filename: string) => Promise<string | null>;
     setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
     setDateRange: React.Dispatch<React.SetStateAction<DateRange>>;
     _setYYYY_MM_DD: React.Dispatch<React.SetStateAction<string>>;
@@ -29,6 +30,7 @@ const TransactionsContext = createContext<TransactionsContextType>({
     handleDeleteChatMessage: () => { },
     handleEditChatMessage: () => { },
     readAllTransactionsFiles: () => Promise.resolve([]),
+    readTransactionsByFilename: () => Promise.resolve(null),
     setChatHistory: () => { },
     setDateRange: () => { },
     _setYYYY_MM_DD: () => { },
@@ -40,7 +42,7 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
     const [_storedMessages, _setStoredMessages] = useState<ChatMessage[]>([]);
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null });
-    const { saveDataToCache: saveTransactionsToCache, readFileFromCache: readTransactionsFromCache, readAllFilesFromDirectory: readAllTransactionsFiles } = useCache(`chat_history_${_YYYY_MM_DD}.json`, 'chat_history');
+    const { saveDataToCache: saveTransactionsToCache, readFileFromCache: readTransactionsFromCache, readAllFilesFromDirectory: readAllTransactionsFiles, readFileFromCacheByName: readTransactionsByFilename } = useCache(`chat_history_${_YYYY_MM_DD}.json`, 'chat_history');
 
     useEffect(() => {
         const readTransactions = async () => {
@@ -101,6 +103,7 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
             handleDeleteChatMessage,
             handleEditChatMessage,
             readAllTransactionsFiles,
+            readTransactionsByFilename,
             setChatHistory,
             setDateRange,
             _setYYYY_MM_DD,

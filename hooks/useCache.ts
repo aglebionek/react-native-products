@@ -68,7 +68,21 @@ const useCache = (cachedFileName: string, cachedFileDirectory: string = "") => {
         }
     }, []);
 
-    return { checkIfFileExistsInCache, readFileFromCache, saveDataToCache, readAllFilesFromDirectory };
+    const readFileFromCacheByName = useCallback(async (fileName: string) => {
+        try {
+            const filePath = `${cacheDirectory}${cachedFileDirectory}${fileName}`;
+            if (await getInfoAsync(filePath).then(info => info.exists && !info.isDirectory)) {
+                return readAsStringAsync(filePath);
+            }
+            return null;
+        } catch (error) {
+            console.error(error);
+            console.error("Failed to read file from cache by name");
+            return null;
+        }
+    }, [cachedFileDirectory]);
+
+    return { checkIfFileExistsInCache, readFileFromCache, saveDataToCache, readAllFilesFromDirectory, readFileFromCacheByName };
 }
 
 export default useCache;

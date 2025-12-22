@@ -1,4 +1,4 @@
-import { Print, Product, PRODUCT_TYPE } from "@/@types";
+import { Product, PRODUCT_TYPE } from "@/@types";
 import { PrintFormat } from "@/@types/products";
 import { useProducts } from "@/contexts/ProductsContext";
 

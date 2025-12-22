@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ToastAndroid, View } from "react-native";
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
+import { ChatMessage } from '@/@types';
 import { Text } from '@/components';
 import { useTransactions } from '@/contexts/TransactionsContext';
 import { NAVIGATION_VIEW_PATHNAMES, NAVIGATION_VIEWS, useNavigationContext } from '@/contexts/NavigationContext';
@@ -20,7 +21,7 @@ const extractYYYY_MM_DD = (filename: string) => {
 };
 
 const Chat = () => {
-  const { chatHistory, readAllTransactionsFiles, _setYYYY_MM_DD } = useTransactions();
+  const { readAllTransactionsFiles, readTransactionsByFilename, _setYYYY_MM_DD } = useTransactions();
   const { setCurrentNavigationView } = useNavigationContext();
   const { handleDownloadFile } = usePermissions();
   const { navigate } = useRouter();
@@ -47,9 +48,11 @@ const Chat = () => {
     fetchChatHistory();
   }, [readAllTransactionsFiles]);
 
-  const convertChatHistoryToCSV = () => {
-    const rows = chatHistory.map(message => {
-      const date = date2String(message.timestamp);
+  const convertChatHistoryToCSV = async (filename: string) => {
+    const selectedTransactions = await readTransactionsByFilename(filename);
+    if (!selectedTransactions) return "";
+    const rows = JSON.parse(selectedTransactions).map((message: ChatMessage) => {
+      const date = date2String(new Date(message.timestamp));
       return `${date.date}, ${date.time}, ${message.productCategory}, ${message.productName}, ${message.productQuantity}`;
     });
     return rows.join("\n");
@@ -58,7 +61,14 @@ const Chat = () => {
   const handleDownloadCSV = async (chatHistoryElement: string) => {
     ToastAndroid.show("Downloading CSV...", ToastAndroid.SHORT);
     const YYYY_MM_DD = extractYYYY_MM_DD(chatHistoryElement);
-    const csvData = convertChatHistoryToCSV();
+    let csvData = "";
+    try {
+      csvData = await convertChatHistoryToCSV(chatHistoryElement);
+    } catch (error) {
+      console.error("Failed to convert chat history to CSV", error);
+      ToastAndroid.show("Failed to convert chat history to CSV", ToastAndroid.LONG);
+      return;
+    }
     const filename = `${YYYY_MM_DD}.csv`;
     const mimetype = 'text/csv';
 
