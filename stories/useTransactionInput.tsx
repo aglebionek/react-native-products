@@ -1,5 +1,5 @@
 import { ChatMessage, Product, PRODUCT_TYPE, ProductCategory } from "@/@types";
-import { useHistory } from "@/contexts/TransactionsContext";
+import { useTransactions } from "@/contexts/TransactionsContext";
 import { useProducts } from "@/contexts/ProductsContext";
 import { getCurrentDateInPolishTimezone } from "@/utils/common";
 import { useFocusEffect } from "expo-router";
@@ -20,7 +20,7 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
     const initialCategory = initialTransaction ? initialTransaction.productCategory : null;
     const initialQuantity = initialTransaction ? initialTransaction.productQuantity : 1;
 
-    const { handleAddChatMessage, handleEditChatMessage } = useHistory();
+    const { handleAddChatMessage, handleEditChatMessage } = useTransactions();
 
     const { stickers, prints, setStickers, setPrints } = useProducts();
     const [inputState, setInputState] = useState(InputStates.SELECTING_CATEGORY);

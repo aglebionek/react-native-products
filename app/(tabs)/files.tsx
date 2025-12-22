@@ -7,7 +7,7 @@ import { Pressable, ToastAndroid, View } from "react-native";
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
 import { Text } from '@/components';
-import { useHistory } from '@/contexts/TransactionsContext';
+import { useTransactions } from '@/contexts/TransactionsContext';
 import { NAVIGATION_VIEW_PATHNAMES, NAVIGATION_VIEWS, useNavigationContext } from '@/contexts/NavigationContext';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -20,7 +20,7 @@ const extractYYYY_MM_DD = (filename: string) => {
 };
 
 const Chat = () => {
-  const { chatHistory, readAllChatHistoryFiles, _setYYYY_MM_DD } = useHistory();
+  const { chatHistory, readAllTransactionsFiles, _setYYYY_MM_DD } = useTransactions();
   const { setCurrentNavigationView } = useNavigationContext();
   const { handleDownloadFile } = usePermissions();
   const { navigate } = useRouter();
@@ -41,11 +41,11 @@ const Chat = () => {
 
   useEffect(() => {
     const fetchChatHistory = async () => {
-      const files = await readAllChatHistoryFiles();
+      const files = await readAllTransactionsFiles();
       setChatHistoryFiles(files.filter(file => file.startsWith('chat_history_') && file.endsWith('.json')).sort().reverse());
     };
     fetchChatHistory();
-  }, [readAllChatHistoryFiles]);
+  }, [readAllTransactionsFiles]);
 
   const convertChatHistoryToCSV = () => {
     const rows = chatHistory.map(message => {

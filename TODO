@@ -1,11 +1,18 @@
 ## Critical
 Create a backup of products for loading issues (as to not overwrite existing data)
 fix chat history downloading the current history and not the one clicked
+Add more products:
+    - Keychains
+    - Bookmarks
+    - Pins
 
 ## Secondary
 Fix original keyword restoring on keyboard hide
+Add option for a bulk misc transaction (for when someone buys 10 stickers and there is not time to individually enter each one)
 Auto-create new products json on day change
 Add option to remove old chat histories
+Add a short delay when showing modals to await keyboard opening for better visuals
+Edit product - auto-select the stock number, add keyword on focus change
 Rename ChatMessage/History to Transaction
 Improve products UI
 Improve history chat UI

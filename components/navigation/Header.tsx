@@ -3,20 +3,10 @@ import { useRouter, usePathname } from 'expo-router';
 import { View } from 'react-native';
 
 import { Text } from '@/components';
-import { useHistory } from '@/contexts/TransactionsContext';
+import { useTransactions } from '@/contexts/TransactionsContext';
 import { NAVIGATION_VIEWS, useNavigationContext, NAVIGATION_VIEW_PATHNAMES } from '@/contexts/NavigationContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { date2String, getCurrentDateInYYYY_MM_DD, YYYY_MM_DD2Date } from '@/utils/common';
-
-// const selectHeaderTitle = (pathname: string, _YYYY_MM_DD: string) => {
-//     if (pathname === '/files') return "History";
-//     let dateToFormat = new Date();
-//     if (pathname === '/old_chat') {
-//         dateToFormat = YYYY_MM_DD2Date(_YYYY_MM_DD);
-//     }
-//     const dateString = date2String(dateToFormat);
-//     return `${dateString.weekday}, ${dateString.date}`;
-// }
 
 const selectHeaderTitle = (currentNavigationView: NAVIGATION_VIEWS, _YYYY_MM_DD: string) => {
     switch (currentNavigationView) {
@@ -36,7 +26,7 @@ const selectHeaderTitle = (currentNavigationView: NAVIGATION_VIEWS, _YYYY_MM_DD:
 }
 
 const Header = () => {
-    const { _YYYY_MM_DD, _setYYYY_MM_DD } = useHistory();
+    const { _YYYY_MM_DD, _setYYYY_MM_DD } = useTransactions();
     const { currentNavigationView, setCurrentNavigationView } = useNavigationContext();
     const pathname = usePathname();
     const { navigate } = useRouter();

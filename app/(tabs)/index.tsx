@@ -6,14 +6,14 @@ import { Keyboard, TextInput, View } from "react-native";
 
 import { ChatMessage } from '@/@types';
 import { ConfirmModal, Input, SuggestionButton, Text } from '@/components';
-import { useHistory } from '@/contexts/TransactionsContext';
+import { useTransactions } from '@/contexts/TransactionsContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { formatChatMessage } from '@/utils/common';
 import { InputStates, useTransactionInput } from '@/stories/useTransactionInput';
 import { EditTransactionModal } from '@/components/(tabs)/index/EditTransactionModal';
 
 const Chat = () => {
-  const { chatHistory, handleDeleteChatMessage } = useHistory();
+  const { chatHistory, handleDeleteChatMessage } = useTransactions();
   const { COLORS } = useTheme();
 
   const { handleSetCategory, handleSetProduct, inputValue, inputState, onChangeInputText, onSubmitEditing, productSuggestions, categorySuggestions } = useTransactionInput();

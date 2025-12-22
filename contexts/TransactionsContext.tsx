@@ -15,7 +15,7 @@ type TransactionsContextType = {
     handleAddChatMessage: (message: ChatMessage) => void;
     handleDeleteChatMessage: (message: ChatMessage) => void;
     handleEditChatMessage: (newMessage: ChatMessage) => void;
-    readAllChatHistoryFiles: () => Promise<string[]>;
+    readAllTransactionsFiles: () => Promise<string[]>;
     setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
     setDateRange: React.Dispatch<React.SetStateAction<DateRange>>;
     _setYYYY_MM_DD: React.Dispatch<React.SetStateAction<string>>;
@@ -28,7 +28,7 @@ const TransactionsContext = createContext<TransactionsContextType>({
     handleAddChatMessage: () => { },
     handleDeleteChatMessage: () => { },
     handleEditChatMessage: () => { },
-    readAllChatHistoryFiles: () => Promise.resolve([]),
+    readAllTransactionsFiles: () => Promise.resolve([]),
     setChatHistory: () => { },
     setDateRange: () => { },
     _setYYYY_MM_DD: () => { },
@@ -40,12 +40,12 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
     const [_storedMessages, _setStoredMessages] = useState<ChatMessage[]>([]);
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null });
-    const { saveDataToCache: saveChatHistoryToCache, readFileFromCache: readChatHistoryFromCache, readAllFilesFromDirectory: readAllChatHistoryFiles } = useCache(`chat_history_${_YYYY_MM_DD}.json`, 'chat_history');
+    const { saveDataToCache: saveTransactionsToCache, readFileFromCache: readTransactionsFromCache, readAllFilesFromDirectory: readAllTransactionsFiles } = useCache(`chat_history_${_YYYY_MM_DD}.json`, 'chat_history');
 
     useEffect(() => {
-        const readChatHistory = async () => {
+        const readTransactions = async () => {
             try {
-                const cachedChatHistory = await readChatHistoryFromCache();
+                const cachedChatHistory = await readTransactionsFromCache();
                 if (!cachedChatHistory) return setChatHistory(_storedMessages);
 
                 setChatHistory(JSON.parse(cachedChatHistory, (_, value) => {
@@ -59,7 +59,7 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
             }
         };
 
-        readChatHistory();
+        readTransactions();
     }, [_YYYY_MM_DD]);
 
     const handleAddChatMessage = (message: ChatMessage) => {
@@ -76,7 +76,7 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
         // }
         setChatHistory(prev => {
             const newChatHistory = [...prev, message];
-            saveChatHistoryToCache(JSON.stringify(newChatHistory));
+            saveTransactionsToCache(JSON.stringify(newChatHistory));
             return newChatHistory;
         });
     }
@@ -84,13 +84,13 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
     const handleDeleteChatMessage = (message: ChatMessage) => {
         const newChatHistory = chatHistory.filter(m => m.timestamp !== message.timestamp);
         setChatHistory(newChatHistory);
-        saveChatHistoryToCache(JSON.stringify(newChatHistory));
+        saveTransactionsToCache(JSON.stringify(newChatHistory));
     }
 
     const handleEditChatMessage = (newMessage: ChatMessage) => {
         const newChatHistory = chatHistory.map(m => m.timestamp === newMessage.timestamp ? newMessage : m);
         setChatHistory(newChatHistory);
-        saveChatHistoryToCache(JSON.stringify(newChatHistory));
+        saveTransactionsToCache(JSON.stringify(newChatHistory));
     }
 
     return (
@@ -100,7 +100,7 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
             handleAddChatMessage,
             handleDeleteChatMessage,
             handleEditChatMessage,
-            readAllChatHistoryFiles,
+            readAllTransactionsFiles,
             setChatHistory,
             setDateRange,
             _setYYYY_MM_DD,
@@ -111,4 +111,4 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
     )
 }
 
-export const useHistory = () => useContext(TransactionsContext);
+export const useTransactions = () => useContext(TransactionsContext);
