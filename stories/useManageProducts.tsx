@@ -1,6 +1,5 @@
 import { Product, PRODUCT_TYPE } from "@/@types";
 import { PrintFormat } from "@/@types/products";
-import { useProducts } from "@/contexts/ProductsContext";
 import useSelectStateAndSetterForProduct from "@/hooks/useSelectStateAndSetterForProduct";
 
 const checkIfNameExists = (name: string, products: Product[]) => {
@@ -9,6 +8,14 @@ const checkIfNameExists = (name: string, products: Product[]) => {
 
 const useManageProducts = () => {
     const selectStateAndSetterForProduct = useSelectStateAndSetterForProduct();
+
+    const getProductByName = (name: string, type: PRODUCT_TYPE): Product | null => {
+        const { state } = selectStateAndSetterForProduct(type);
+        if (!state) return null;
+
+        const product = state.find(p => p.name.toLowerCase() === name.toLowerCase());
+        return product || null;
+    }
 
     const handleAddNewProduct = async (product: Product) => {
         const { state, setState } = selectStateAndSetterForProduct(product.type);
@@ -44,16 +51,6 @@ const useManageProducts = () => {
         return true;
     }
 
-    // TODO
-    const handleUpdateStockForProduct = async (product: Product, newStock: number) => {
-        const { state, setState } = selectStateAndSetterForProduct(product.type);
-        if (!state || !setState) return;
-
-        product.stock = newStock;
-        const updatedProducts = state.map(p => p.name === product.name ? product : p);
-        await setState(updatedProducts, product.type);
-    }
-
     const handleChangePrintFormat = (product: Product, format: PrintFormat) => {
         if (product.type !== PRODUCT_TYPE.PRINT) return product;
         if (product.formats.includes(format)) {
@@ -64,7 +61,16 @@ const useManageProducts = () => {
         return product;
     }
 
-    return { handleAddNewProduct, handleDeleteProduct, handleUpdateExistingProduct, mutations: { handleChangePrintFormat } };
+    const handleUpdateStockForProduct = async (product: Product, newStock: number) => {
+        const { state, setState } = selectStateAndSetterForProduct(product.type);
+        if (!state || !setState) return;
+
+        product.stock = newStock;
+        const updatedProducts = state.map(p => p.name === product.name ? product : p);
+        await setState(updatedProducts, product.type);
+    }
+
+    return { getProductByName, handleAddNewProduct, handleDeleteProduct, handleUpdateExistingProduct, mutations: { handleChangePrintFormat, handleUpdateStockForProduct } };
 };
 
 export default useManageProducts;

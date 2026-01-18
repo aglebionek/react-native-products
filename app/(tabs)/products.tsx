@@ -10,10 +10,12 @@ import EditProductModal from "@/components/(tabs)/products/EditProductModal";
 import { NAVIGATION_VIEWS, useNavigationContext } from "@/contexts/NavigationContext";
 import { useProducts } from "@/contexts/ProductsContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import useManageProducts from "@/stories/useManageProducts";
 
 const BrowseProducts = () => {
     const { currentNavigationView, setCurrentNavigationView } = useNavigationContext();
-    const { bookmarks, keychains, pins, prints, stickers, setBookmarks, setKeychains, setPins, setPrints, setStickers } = useProducts();
+    const productManager = useManageProducts();
+    const { bookmarks, keychains, pins, prints, stickers } = useProducts();
     const { COLORS } = useTheme();
 
     const [selectedCategory, setSelectedCategory] = useState<'keychains' |'stickers' | 'prints' | 'pins' | 'bookmarks' | null>(null);
@@ -77,36 +79,14 @@ const BrowseProducts = () => {
         setSearchResults(filteredResults);
     }
 
-    const handleCloneProduct = () => {
+    const handleCloneProduct = async () => {
         const productToClone = { ...selectedProduct } as Product | null;
         if (!productToClone) return;
 
         productToClone.name = `${productToClone.name} - COPY`;
 
-        if (productToClone.type === PRODUCT_TYPE.NAKLEJKA) {
-            const updatedStickers = [...stickers, productToClone];
-            setStickers(updatedStickers);
-        }
-
-        if (productToClone.type === PRODUCT_TYPE.PRINT) {
-            const updatedPrints = [...prints, productToClone];
-            setPrints(updatedPrints);
-        }
-
-        if (productToClone.type === PRODUCT_TYPE.BRELOCZEK) {
-            const updatedKeychains = [...keychains, productToClone];
-            setKeychains(updatedKeychains);
-        }
-
-        if (productToClone.type === PRODUCT_TYPE.PIN) {
-            const updatedPins = [...pins, productToClone];
-            setPins(updatedPins);
-        }
-
-        if (productToClone.type === PRODUCT_TYPE.BOOKMARK) {
-            const updatedBookmarks = [...bookmarks, productToClone];
-            setBookmarks(updatedBookmarks);
-        }
+        const productAdded = await productManager.handleAddNewProduct(productToClone);
+        if (!productAdded) return ToastAndroid.show(`Product with this name already exists: ${productToClone.name}`, ToastAndroid.SHORT);
 
         handleModalOnClose();
 

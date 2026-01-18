@@ -5,6 +5,7 @@ import { getCurrentDateInPolishTimezone } from "@/utils/common";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { ToastAndroid } from "react-native";
+import useManageProducts from "./useManageProducts";
 
 interface useTransactionInput {
     initialTransaction: ChatMessage | null;
@@ -22,7 +23,8 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
 
     const { handleAddChatMessage, handleEditChatMessage } = useTransactions();
 
-    const { bookmarks, keychains, pins, prints, stickers, setBookmarks, setKeychains, setPins, setPrints, setStickers } = useProducts();
+    const productManager = useManageProducts();
+    const { bookmarks, keychains, pins, prints, stickers } = useProducts();
     const [inputState, setInputState] = useState(InputStates.SELECTING_CATEGORY);
 
     const [category, setCategory] = useState<ProductCategory | null>(initialCategory);
@@ -163,7 +165,7 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
         }
     }
 
-    const onSubmitEditing = () => {
+    const onSubmitEditing = async () => {
         if (inputState !== InputStates.SELECTING_QUANTITY) return;
         if (!product) {
             ToastAndroid.show('No product selected', ToastAndroid.SHORT);
@@ -183,40 +185,15 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
             timestamp
         };
 
-        let updateFunction = null;
-        product.stock -= quantity;
-        if (product.type === PRODUCT_TYPE.PRINT) {
-            const filteredPrints = prints.filter(p => p.name !== product.name);
-            filteredPrints.push(product);
-            updateFunction = () => setPrints(filteredPrints);
-        } else if (product.type === PRODUCT_TYPE.NAKLEJKA) {
-            const updatedStickers = stickers.filter(p => p.name !== product.name);
-            updatedStickers.push(product);
-            updateFunction = () => setStickers(updatedStickers);
-        } else if (product.type === PRODUCT_TYPE.BRELOCZEK) {
-            const updatedKeychains = keychains.filter(p => p.name !== product.name);
-            updatedKeychains.push(product);
-            updateFunction = () => setKeychains(updatedKeychains);
-        } else if (product.type === PRODUCT_TYPE.PIN) {
-            const updatedPins = pins.filter(p => p.name !== product.name);
-            updatedPins.push(product);
-            updateFunction = () => setPins(updatedPins);
-        } else if (product.type === PRODUCT_TYPE.BOOKMARK) {
-            const updatedBookmarks = bookmarks.filter(p => p.name !== product.name);
-            updatedBookmarks.push(product);
-            updateFunction = () => setBookmarks(updatedBookmarks);
-        }
+        let newQuantity = product.stock - quantity;
+        if (initialTransaction) newQuantity = product.stock + initialTransaction.productQuantity - quantity;
 
-        if (updateFunction) {
-            updateFunction().then(() => {
-                if (initialTransaction) {
-                    handleEditChatMessage(newChatHistory);
-                } else {
-                    handleAddChatMessage(newChatHistory);
-                }
-                handleSetDefaultStates();
-            });
-        }
+        await productManager.mutations.handleUpdateStockForProduct(product, newQuantity);
+
+        if (initialTransaction) handleEditChatMessage(newChatHistory);
+        else handleAddChatMessage(newChatHistory);
+
+        handleSetDefaultStates();
     }
 
     return { handleSetCategory, handleSetProduct, inputValue, inputState, onChangeInputText, onSubmitEditing, categorySuggestions, productSuggestions }

@@ -4,7 +4,7 @@ Create a backup of products for loading issues (as to not overwrite existing dat
 ## Bugs
 Edit product - auto-select the stock number, add keyword on focus change
 Auto-create new products json on day change
-Fix stock number change on transaction edit/delete
+Fix stock number change on transaction edit/delete - NOT IN THE ON SUBMIT EDITING IN USETRANSACTIONINPUT
 Fix original keyword restoring on keyboard hide
 
 ## Improvements
