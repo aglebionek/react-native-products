@@ -18,7 +18,7 @@ type BaseProduct = {
 
 type Print = BaseProduct & {
     type: PRODUCT_TYPE.PRINT;
-    formats: string[];
+    formats: PrintFormat[];
 }
 
 type Sticker = BaseProduct & {

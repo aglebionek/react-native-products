@@ -40,18 +40,6 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
         "N": stickers,
     }), [keychains, stickers, prints]);
 
-    useFocusEffect(
-        useCallback(() => {
-            if (initialTransaction) {
-                const product = productsCategories[initialTransaction.productCategory].find(p => p.name === initialTransaction.productName) || null;
-                if (!product) return;
-                setProduct(product);
-                setInputState(InputStates.SELECTING_QUANTITY);
-                setInputValue(`${initialTransaction.productCategory} ${product.name} ${initialTransaction.productQuantity}`);
-            }
-        }, [])
-    );
-
     const handleSetDefaultStates = () => {
         setInputValue('');
         setCategory(null);
@@ -61,6 +49,24 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
         setInputState(InputStates.SELECTING_CATEGORY);
         setQuantity(1);
     }
+
+    useFocusEffect(
+        useCallback(() => {
+            if (initialTransaction) {
+                const product = productsCategories[initialTransaction.productCategory].find(p => p.name === initialTransaction.productName) || null;
+                if (!product) return;
+                setProduct(product);
+                setInputState(InputStates.SELECTING_QUANTITY);
+                setInputValue(`${initialTransaction.productCategory} ${product.name} ${initialTransaction.productQuantity}`);
+            }
+
+            return () => {
+                handleSetDefaultStates();
+            };
+        }, [])
+    );
+
+
 
     const handleSetCategory = (text: ProductCategory) => {
         setCategory(text);

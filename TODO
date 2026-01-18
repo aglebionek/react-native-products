@@ -1,22 +1,27 @@
 ## Critical
 Create a backup of products for loading issues (as to not overwrite existing data)
 Add more products:
-    - Keychains
     - Bookmarks
     - Pins
 
-## Secondary
-Fix original keyword restoring on keyboard hide
-Fix stock number change on transaction edit/delete
-Add option for a bulk misc transaction (for when someone buys 10 stickers and there is not time to individually enter each one)
+## Bugs
+Edit product - auto-select the stock number, add keyword on focus change
 Auto-create new products json on day change
+Fix stock number change on transaction edit/delete
+
+## Improvements
+Fix original keyword restoring on keyboard hide
+Auto-add id to products and rewrite transaction logic to use ids instead of names (to allow renaming products) / prevent saving duplicate products
+Add option for a bulk misc transaction (for when someone buys 10 stickers and there is not time to individually enter each one)
 Add option to remove old chat histories
 Add option to export all products of a category to JSON, and be able to import them back to update products in bulk
 Add a short delay when showing modals to await keyboard opening for better visuals
-Edit product - auto-select the stock number, add keyword on focus change
+
+## Future
 Rename ChatMessage/History to Transaction
 Improve products UI
 Improve history chat UI
 Improve file list UI
 Cleanup codebase
 Add tests
+Remove polish keywords from code

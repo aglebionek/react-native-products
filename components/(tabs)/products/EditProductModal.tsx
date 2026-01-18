@@ -39,8 +39,8 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
     }
 
     const handleEditPrintFormat = (format: PrintFormat) => {
-        productManager.mutations.handleChangePrintFormat(productClone, format);
-        setProductClone({ ...productClone });
+        const editedProduct = productManager.mutations.handleChangePrintFormat(productClone, format);
+        setProductClone({ ...editedProduct });
     }
 
     const handleEditStickerHolo = () => {
@@ -174,8 +174,8 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
                                     {['A4', 'A5', 'A6'].map((format) => (
                                         <View key={format} style={{ flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
                                             <Checkbox
-                                                checked={productClone.formats.includes(format as 'A4' | 'A5' | 'A6')}
-                                                onPress={() => handleEditPrintFormat(format as 'A4' | 'A5' | 'A6')}
+                                                checked={productClone.formats.includes(format as PrintFormat)}
+                                                onPress={() => handleEditPrintFormat(format as PrintFormat)}
                                             />
                                             <Text style={{ color: 'white', marginLeft: 5 }}>{format}</Text>
                                         </View>
