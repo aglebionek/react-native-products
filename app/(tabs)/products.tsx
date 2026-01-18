@@ -13,15 +13,15 @@ import { useTheme } from "@/contexts/ThemeContext";
 
 const BrowseProducts = () => {
     const { currentNavigationView, setCurrentNavigationView } = useNavigationContext();
-    const { keychains, prints, stickers, setKeychains, setPrints, setStickers } = useProducts();
+    const { bookmarks, keychains, pins, prints, stickers, setBookmarks, setKeychains, setPins, setPrints, setStickers } = useProducts();
     const { COLORS } = useTheme();
 
-    const [selectedCategory, setSelectedCategory] = useState<'keychains' |'stickers' | 'prints' | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<'keychains' |'stickers' | 'prints' | 'pins' | 'bookmarks' | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<Product[]>([]);
 
-    const mergedProducts = useMemo(() => [...keychains, ...stickers, ...prints], [keychains, stickers, prints]);
+    const mergedProducts = useMemo(() => [...keychains, ...stickers, ...prints, ...pins, ...bookmarks], [keychains, stickers, prints, pins, bookmarks]);
 
     const inputRef = useRef<TextInput>(null);
 
@@ -96,6 +96,16 @@ const BrowseProducts = () => {
         if (productToClone.type === PRODUCT_TYPE.BRELOCZEK) {
             const updatedKeychains = [...keychains, productToClone];
             setKeychains(updatedKeychains);
+        }
+
+        if (productToClone.type === PRODUCT_TYPE.PIN) {
+            const updatedPins = [...pins, productToClone];
+            setPins(updatedPins);
+        }
+
+        if (productToClone.type === PRODUCT_TYPE.BOOKMARK) {
+            const updatedBookmarks = [...bookmarks, productToClone];
+            setBookmarks(updatedBookmarks);
         }
 
         handleModalOnClose();

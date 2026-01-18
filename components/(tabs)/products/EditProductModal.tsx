@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Keyboard, Modal, View } from "react-native";
+import { Keyboard, Modal, ToastAndroid, View } from "react-native";
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 
 import { PrintFormat, Product, PRODUCT_TYPE } from "@/@types";
@@ -51,7 +51,11 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
 
     const handleSaveProduct = async () => {
         if (isAddingKeyword) return handleSaveNewKeyword();
-        await productManager.handleUpdateExistingProduct(product, productClone);
+
+        const didUpdate = await productManager.handleUpdateExistingProduct(product, productClone);
+        if (!didUpdate) return ToastAndroid.show('Product with this name already exists', ToastAndroid.SHORT);
+        
+        ToastAndroid.show(`Saved changes to ${productClone.name}`, ToastAndroid.SHORT);
         onClose();
     }
 

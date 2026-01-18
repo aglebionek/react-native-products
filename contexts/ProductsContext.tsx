@@ -1,10 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-import { Keychain, Print, Sticker } from '@/@types';
+import { Bookmark, Keychain, Pin, Print, Sticker } from '@/@types';
+import defaultBookmarks from "@/constants/products/bookmarks.default";
+import defaultKeychains from "@/constants/products/keychains.default";
+import defaultPins from "@/constants/products/pins.default";
 import defaultPrints from '@/constants/products/prints.default';
 import defaultStickers from '@/constants/products/stickers.default';
 import useCache from "@/hooks/useCache";
-import defaultKeychains from "@/constants/products/keychains.default";
 
 type ProductsContextProvider = {
     keychains: Keychain[];
@@ -13,6 +15,10 @@ type ProductsContextProvider = {
     setPrints: (prints: Print[]) => Promise<void>;
     stickers: Sticker[];
     setStickers: (stickers: Sticker[]) => Promise<void>;
+    pins: Pin[];
+    setPins: (pins: Pin[]) => Promise<void>;
+    bookmarks: Bookmark[];
+    setBookmarks: (bookmarks: Bookmark[]) => Promise<void>;
     productsLoaded: boolean;
     productsLoadingError: string | null;
 }
@@ -24,6 +30,10 @@ const ProductsContext = createContext<ProductsContextProvider>({
     setPrints: async () => {},
     stickers: [],
     setStickers: async () => {},
+    pins: [],
+    setPins: async () => {},
+    bookmarks: [],
+    setBookmarks: async () => {},
     productsLoaded: false,
     productsLoadingError: null,
 })
@@ -32,10 +42,14 @@ export const ProductsProvider = ({ children }: { children: React.ReactNode }) =>
     const { readFileFromCache: readKeychainsFromCache, saveDataToCache: saveKeychainsToCache } = useCache('keychains.json');
     const { readFileFromCache: readPrintsFromCache, saveDataToCache: savePrintsToCache } = useCache('prints.json');
     const { readFileFromCache: readStickersFromCache, saveDataToCache: saveStickersToCache } = useCache('stickers.json');
+    const { readFileFromCache: readPinsFromCache, saveDataToCache: savePinsToCache } = useCache('pins.json');
+    const { readFileFromCache: readBookmarksFromCache, saveDataToCache: saveBookmarksToCache } = useCache('bookmarks.json');
 
     const [keychains, _setKeychains] = useState<Keychain[]>([]);
     const [prints, _setPrints] = useState<Print[]>([]);
     const [stickers, _setStickers] = useState<Sticker[]>([]);
+    const [pins, _setPins] = useState<Pin[]>([]);
+    const [bookmarks, _setBookmarks] = useState<Bookmark[]>([]);
 
     const [productsLoadingError, setProductsLoadingError] = useState<string | null>(null);
     const [productsLoaded, setProductsLoaded] = useState(false);
@@ -75,6 +89,28 @@ export const ProductsProvider = ({ children }: { children: React.ReactNode }) =>
                 return;
             }
 
+            try {
+                const cachedPins = await readPinsFromCache();
+                if (cachedPins) _setPins(JSON.parse(cachedPins));
+                // TODO: rewrite this to use a copy of the pins.json
+                else _setPins(defaultPins);
+            } catch (error) {
+                console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readPins \n ${error}`);
+                setProductsLoadingError('Failed to load pins from cache.');
+                return;
+            }
+
+            try {
+                const cachedBookmarks = await readBookmarksFromCache();
+                if (cachedBookmarks) _setBookmarks(JSON.parse(cachedBookmarks));
+                // TODO: rewrite this to use a copy of the bookmarks.json
+                else _setBookmarks(defaultBookmarks);
+            } catch (error) {
+                console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readBookmarks \n ${error}`);
+                setProductsLoadingError('Failed to load bookmarks from cache.');
+                return;
+            }
+
             setProductsLoaded(true);
         }
 
@@ -96,8 +132,18 @@ export const ProductsProvider = ({ children }: { children: React.ReactNode }) =>
         await saveStickersToCache(JSON.stringify(stickers));
     }
 
+    const setPins = async (pins: Pin[]) => {
+        _setPins(pins);
+        await savePinsToCache(JSON.stringify(pins));
+    }
+
+    const setBookmarks = async (bookmarks: Bookmark[]) => {
+        _setBookmarks(bookmarks);
+        await saveBookmarksToCache(JSON.stringify(bookmarks));
+    }
+
     return (
-        <ProductsContext.Provider value={{ keychains, setKeychains, prints, setPrints, stickers, setStickers, productsLoaded, productsLoadingError }}>
+        <ProductsContext.Provider value={{ keychains, setKeychains, prints, setPrints, stickers, setStickers, pins, setPins, bookmarks, setBookmarks, productsLoaded, productsLoadingError }}>
             {children}
         </ProductsContext.Provider>
     )

@@ -2,8 +2,8 @@ enum PRODUCT_TYPE {
     PRINT = 0,
     NAKLEJKA = 1,
     BRELOCZEK = 2,
-    PRZYPINKA = 3,
-    ZAKŁADKA = 4
+    PIN = 3,
+    BOOKMARK = 4
 }
 
 type PrintFormat = 'A4' | 'A5' | 'A6';
@@ -31,11 +31,11 @@ type Keychain = BaseProduct & {
 }
 
 type Pin = BaseProduct & {
-    type: PRODUCT_TYPE.PRZYPINKA;
+    type: PRODUCT_TYPE.PIN;
 }
 
 type Bookmark = BaseProduct & {
-    type: PRODUCT_TYPE.ZAKŁADKA;
+    type: PRODUCT_TYPE.BOOKMARK;
 }
 
 type Product = Print | Sticker | Keychain | Pin | Bookmark;

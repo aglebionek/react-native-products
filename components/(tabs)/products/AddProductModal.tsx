@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Keyboard, Modal, TextInput, View } from "react-native";
+import { Keyboard, Modal, TextInput, ToastAndroid, View } from "react-native";
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 
 import { BaseProduct, Print, PrintFormat, Product, PRODUCT_TYPE, Sticker } from "@/@types";
@@ -89,11 +89,29 @@ const AddProduct = ({ onClose }: AddProductProps) => {
             }));
             return;
         }
+
+        if (type === PRODUCT_TYPE.PIN) {
+            setNewProduct((prev) => ({
+                ...prev,
+                type: PRODUCT_TYPE.PIN,
+            }));
+            return;
+        }
+
+        if (type === PRODUCT_TYPE.BOOKMARK) {
+            setNewProduct((prev) => ({
+                ...prev,
+                type: PRODUCT_TYPE.BOOKMARK,
+            }));
+            return;
+        }
     }
 
     const handleSaveProduct = async () => {
         if (isAddingKeyword) return handleSaveNewKeyword();
-        await productManager.handleAddNewProduct(newProduct as Product);
+        const productAdded = await productManager.handleAddNewProduct(newProduct as Product);
+        if (!productAdded) return ToastAndroid.show('Product with this name already exists', ToastAndroid.SHORT);
+        ToastAndroid.show(`Added ${newProduct.name}`, ToastAndroid.SHORT);
         onClose();
     }
 
@@ -205,6 +223,14 @@ const AddProduct = ({ onClose }: AddProductProps) => {
                             <Button
                                 title="Sticker"
                                 onPress={() => handleSelectProductType(PRODUCT_TYPE.NAKLEJKA)}
+                            />
+                            <Button
+                                title="Pin"
+                                onPress={() => handleSelectProductType(PRODUCT_TYPE.PIN)}
+                            />
+                            <Button
+                                title="Bookmark"
+                                onPress={() => handleSelectProductType(PRODUCT_TYPE.BOOKMARK)}
                             />
                         </View>
 

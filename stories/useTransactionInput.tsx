@@ -22,7 +22,7 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
 
     const { handleAddChatMessage, handleEditChatMessage } = useTransactions();
 
-    const { keychains, stickers, prints, setKeychains, setStickers, setPrints } = useProducts();
+    const { bookmarks, keychains, pins, prints, stickers, setBookmarks, setKeychains, setPins, setPrints, setStickers } = useProducts();
     const [inputState, setInputState] = useState(InputStates.SELECTING_CATEGORY);
 
     const [category, setCategory] = useState<ProductCategory | null>(initialCategory);
@@ -38,7 +38,9 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
         "A6": prints.filter(print => print.formats.includes('A6')),
         "B": keychains,
         "N": stickers,
-    }), [keychains, stickers, prints]);
+        "P": pins,
+        "Z": bookmarks,
+    }), [keychains, stickers, prints, pins, bookmarks]);
 
     const handleSetDefaultStates = () => {
         setInputValue('');
@@ -182,21 +184,27 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
         };
 
         let updateFunction = null;
+        product.stock -= quantity;
         if (product.type === PRODUCT_TYPE.PRINT) {
             const filteredPrints = prints.filter(p => p.name !== product.name);
-            product.stock -= quantity;
             filteredPrints.push(product);
             updateFunction = () => setPrints(filteredPrints);
         } else if (product.type === PRODUCT_TYPE.NAKLEJKA) {
             const updatedStickers = stickers.filter(p => p.name !== product.name);
-            product.stock -= quantity;
             updatedStickers.push(product);
             updateFunction = () => setStickers(updatedStickers);
         } else if (product.type === PRODUCT_TYPE.BRELOCZEK) {
             const updatedKeychains = keychains.filter(p => p.name !== product.name);
-            product.stock -= quantity;
             updatedKeychains.push(product);
             updateFunction = () => setKeychains(updatedKeychains);
+        } else if (product.type === PRODUCT_TYPE.PIN) {
+            const updatedPins = pins.filter(p => p.name !== product.name);
+            updatedPins.push(product);
+            updateFunction = () => setPins(updatedPins);
+        } else if (product.type === PRODUCT_TYPE.BOOKMARK) {
+            const updatedBookmarks = bookmarks.filter(p => p.name !== product.name);
+            updatedBookmarks.push(product);
+            updateFunction = () => setBookmarks(updatedBookmarks);
         }
 
         if (updateFunction) {
