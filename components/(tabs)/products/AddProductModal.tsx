@@ -211,7 +211,7 @@ const AddProduct = ({ onClose }: AddProductProps) => {
                         />
 
                         <Text>Product Type</Text>
-                        <View style={{ flexDirection: 'row', marginBottom: 20, display: 'flex', gap: 10 }}>
+                        <View style={{ flexDirection: 'row', marginBottom: 20, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                             <Button
                                 title="Keychain"
                                 onPress={() => handleSelectProductType(PRODUCT_TYPE.BRELOCZEK)}

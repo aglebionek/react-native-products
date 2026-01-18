@@ -5,9 +5,9 @@ Create a backup of products for loading issues (as to not overwrite existing dat
 Edit product - auto-select the stock number, add keyword on focus change
 Auto-create new products json on day change
 Fix stock number change on transaction edit/delete
+Fix original keyword restoring on keyboard hide
 
 ## Improvements
-Fix original keyword restoring on keyboard hide
 Add option for a bulk misc transaction (for when someone buys 10 stickers and there is no time to individually enter each one)
 Add option to remove old chat histories
 Add option to export all products of a category to JSON, and be able to import them back to update products in bulk. Would need a check for duplicate names.
