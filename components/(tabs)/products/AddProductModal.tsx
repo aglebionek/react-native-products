@@ -57,7 +57,7 @@ const AddProduct = ({ onClose }: AddProductProps) => {
 
     const handleEditStickerHolo = () => {
         const product = newProduct as Product;
-        if (product.type !== PRODUCT_TYPE.NAKLEJKA) return;
+        if (product.type !== PRODUCT_TYPE.STICKER) return;
         product.holo = !product.holo;
         setNewProduct({ ...product });
     }
@@ -73,19 +73,19 @@ const AddProduct = ({ onClose }: AddProductProps) => {
             return;
         }
 
-        if (type === PRODUCT_TYPE.NAKLEJKA) {
+        if (type === PRODUCT_TYPE.STICKER) {
             setNewProduct((prev) => ({
                 ...prev,
-                type: PRODUCT_TYPE.NAKLEJKA,
+                type: PRODUCT_TYPE.STICKER,
                 holo: false,
             }));
             return;
         }
 
-        if (type === PRODUCT_TYPE.BRELOCZEK) {
+        if (type === PRODUCT_TYPE.KEYCHAIN) {
             setNewProduct((prev) => ({
                 ...prev,
-                type: PRODUCT_TYPE.BRELOCZEK,
+                type: PRODUCT_TYPE.KEYCHAIN,
             }));
             return;
         }
@@ -214,7 +214,7 @@ const AddProduct = ({ onClose }: AddProductProps) => {
                         <View style={{ flexDirection: 'row', marginBottom: 20, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                             <Button
                                 title="Keychain"
-                                onPress={() => handleSelectProductType(PRODUCT_TYPE.BRELOCZEK)}
+                                onPress={() => handleSelectProductType(PRODUCT_TYPE.KEYCHAIN)}
                             />
                             <Button
                                 title="Print"
@@ -222,7 +222,7 @@ const AddProduct = ({ onClose }: AddProductProps) => {
                             />
                             <Button
                                 title="Sticker"
-                                onPress={() => handleSelectProductType(PRODUCT_TYPE.NAKLEJKA)}
+                                onPress={() => handleSelectProductType(PRODUCT_TYPE.STICKER)}
                             />
                             <Button
                                 title="Pin"
@@ -251,7 +251,7 @@ const AddProduct = ({ onClose }: AddProductProps) => {
                             </>
                         )}
 
-                        {selectedType === PRODUCT_TYPE.NAKLEJKA && (
+                        {selectedType === PRODUCT_TYPE.STICKER && (
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 20 }}>
                                 <Text>Holographic</Text>
                                 <Checkbox

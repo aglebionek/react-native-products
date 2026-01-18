@@ -12,11 +12,11 @@ const useSelectStateAndSetterForProduct = () => {
                 state = productsContext.prints;
                 setState = productsContext.setPrints;
                 break;
-            case PRODUCT_TYPE.NAKLEJKA:
+            case PRODUCT_TYPE.STICKER:
                 state = productsContext.stickers;
                 setState = productsContext.setStickers;
                 break;
-            case PRODUCT_TYPE.BRELOCZEK:
+            case PRODUCT_TYPE.KEYCHAIN:
                 state = productsContext.keychains;
                 setState = productsContext.setKeychains;
                 break;

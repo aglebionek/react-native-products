@@ -1,7 +1,7 @@
 enum PRODUCT_TYPE {
     PRINT = 0,
-    NAKLEJKA = 1,
-    BRELOCZEK = 2,
+    STICKER = 1,
+    KEYCHAIN = 2,
     PIN = 3,
     BOOKMARK = 4
 }
@@ -22,12 +22,12 @@ type Print = BaseProduct & {
 }
 
 type Sticker = BaseProduct & {
-    type: PRODUCT_TYPE.NAKLEJKA;
+    type: PRODUCT_TYPE.STICKER;
     holo: boolean;
 }
 
 type Keychain = BaseProduct & {
-    type: PRODUCT_TYPE.BRELOCZEK;
+    type: PRODUCT_TYPE.KEYCHAIN;
 }
 
 type Pin = BaseProduct & {

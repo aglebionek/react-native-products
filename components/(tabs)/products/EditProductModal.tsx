@@ -44,7 +44,7 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
     }
 
     const handleEditStickerHolo = () => {
-        if (productClone.type !== PRODUCT_TYPE.NAKLEJKA) return;
+        if (productClone.type !== PRODUCT_TYPE.STICKER) return;
         productClone.holo = !productClone.holo;
         setProductClone({ ...productClone });
     }
@@ -188,7 +188,7 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
                             </>
                         )}
 
-                        {productClone.type === PRODUCT_TYPE.NAKLEJKA && (
+                        {productClone.type === PRODUCT_TYPE.STICKER && (
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 20 }}>
                                 <Text>Holographic</Text>
                                 <Checkbox
