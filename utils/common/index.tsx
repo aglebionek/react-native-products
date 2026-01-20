@@ -1,4 +1,4 @@
-import { ChatMessage } from "@/@types";
+import { Transaction } from "@/@types";
 
 export const date2String = (date: Date) => {
     if (!(date instanceof Date)) return { date: '', time: '', datetime: '', weekDay: '' };
@@ -52,6 +52,6 @@ export const getCurrentDateInYYYY_MM_DD = (): string => {
     return date2YYYY_MM_DD(currentDate);
 }
 
-export const formatChatMessage = (message: ChatMessage) => {
-  return `${date2String(message.timestamp).time} - ${message.productCategory} ${message.productName} ${message.productQuantity}`;
+export const formatTransaction = (transaction: Transaction) => {
+  return `${date2String(transaction.timestamp).time} - ${transaction.productCategory} ${transaction.productName} ${transaction.productQuantity}`;
 }

@@ -3,7 +3,7 @@ import { GestureHandlerRootView, TextInput } from "react-native-gesture-handler"
 
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button, Input, Text } from "@/components/common";
-import { ChatMessage } from "@/@types";
+import { Transaction } from "@/@types";
 import { useCallback, useRef } from "react";
 import { InputStates, useTransactionInput } from "@/stories/useTransactionInput";
 import { SuggestionButton } from "./SuggestionButton";
@@ -12,7 +12,7 @@ import { useFocusEffect } from "expo-router";
 interface ConfirmModalProps {
     title: string;
     text: string;
-    transaction: ChatMessage;
+    transaction: Transaction;
     onConfirm: () => void;
     onCancel: () => void;
 }

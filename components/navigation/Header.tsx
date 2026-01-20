@@ -20,7 +20,7 @@ const selectHeaderTitle = (currentNavigationView: NAVIGATION_VIEWS, _YYYY_MM_DD:
         }
         case NAVIGATION_VIEWS.PRODUCTS_LIST:
             return "Products";
-        default: 
+        default:
             return '';
     }
 }
@@ -41,13 +41,7 @@ const Header = () => {
                 navigate(NAVIGATION_VIEW_PATHNAMES.CURRENT_CHAT);
                 break;
             case NAVIGATION_VIEWS.CURRENT_CHAT:
-                setCurrentNavigationView(NAVIGATION_VIEWS.OLD_CHATS_LIST);
-                navigate(NAVIGATION_VIEW_PATHNAMES.OLD_CHATS_LIST);
-                break;
             case NAVIGATION_VIEWS.OLD_CHAT:
-                setCurrentNavigationView(NAVIGATION_VIEWS.OLD_CHATS_LIST);
-                navigate(NAVIGATION_VIEW_PATHNAMES.OLD_CHATS_LIST);
-                break;
             case NAVIGATION_VIEWS.PRODUCTS_LIST:
                 setCurrentNavigationView(NAVIGATION_VIEWS.OLD_CHATS_LIST);
                 navigate(NAVIGATION_VIEW_PATHNAMES.OLD_CHATS_LIST);
@@ -58,16 +52,14 @@ const Header = () => {
     const handleRightIconPress = () => {
         switch (currentNavigationView) {
             case NAVIGATION_VIEWS.CURRENT_CHAT:
+            case NAVIGATION_VIEWS.OLD_CHATS_LIST:
+            case NAVIGATION_VIEWS.OLD_CHAT:
                 setCurrentNavigationView(NAVIGATION_VIEWS.PRODUCTS_LIST);
                 navigate(NAVIGATION_VIEW_PATHNAMES.PRODUCTS_LIST);
                 break;
             case NAVIGATION_VIEWS.PRODUCTS_LIST:
                 setCurrentNavigationView(NAVIGATION_VIEWS.CURRENT_CHAT);
                 navigate(NAVIGATION_VIEW_PATHNAMES.CURRENT_CHAT);
-                break;
-            case NAVIGATION_VIEWS.OLD_CHATS_LIST:
-                setCurrentNavigationView(NAVIGATION_VIEWS.PRODUCTS_LIST);
-                navigate(NAVIGATION_VIEW_PATHNAMES.PRODUCTS_LIST);
                 break;
             case NAVIGATION_VIEWS.EDIT_PRODUCT:
             case NAVIGATION_VIEWS.ADD_PRODUCT:

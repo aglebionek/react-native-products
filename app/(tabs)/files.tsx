@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ToastAndroid, View } from "react-native";
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
-import { ChatMessage } from '@/@types';
+import { Transaction } from '@/@types';
 import { Text } from '@/components';
 import { useTransactions } from '@/contexts/TransactionsContext';
 import { NAVIGATION_VIEW_PATHNAMES, NAVIGATION_VIEWS, useNavigationContext } from '@/contexts/NavigationContext';
@@ -51,7 +51,7 @@ const Chat = () => {
   const convertChatHistoryToCSV = async (filename: string) => {
     const selectedTransactions = await readTransactionsByFilename(filename);
     if (!selectedTransactions) return "";
-    const rows = JSON.parse(selectedTransactions).map((message: ChatMessage) => {
+    const rows = JSON.parse(selectedTransactions).map((message: Transaction) => {
       const date = date2String(new Date(message.timestamp));
       return `${date.date}, ${date.time}, ${message.productCategory}, ${message.productName}, ${message.productQuantity}`;
     });

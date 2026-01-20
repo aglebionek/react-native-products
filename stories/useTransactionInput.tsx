@@ -1,4 +1,4 @@
-import { ChatMessage, Product, PRODUCT_TYPE, ProductCategory } from "@/@types";
+import { Product, ProductCategory, Transaction } from "@/@types";
 import { useTransactions } from "@/contexts/TransactionsContext";
 import { useProducts } from "@/contexts/ProductsContext";
 import { getCurrentDateInPolishTimezone } from "@/utils/common";
@@ -8,7 +8,7 @@ import { ToastAndroid } from "react-native";
 import useManageProducts from "./useManageProducts";
 
 interface useTransactionInput {
-    initialTransaction: ChatMessage | null;
+    initialTransaction: Transaction | null;
 }
 
 export enum InputStates {
@@ -17,11 +17,11 @@ export enum InputStates {
     SELECTING_QUANTITY = 3,
 }
 
-export const useTransactionInput = (initialTransaction: ChatMessage | null = null) => {
+export const useTransactionInput = (initialTransaction: Transaction | null = null) => {
     const initialCategory = initialTransaction ? initialTransaction.productCategory : null;
     const initialQuantity = initialTransaction ? initialTransaction.productQuantity : 1;
 
-    const { handleAddChatMessage, handleEditChatMessage } = useTransactions();
+    const { handleAddTransaction, handleEditTransaction } = useTransactions();
 
     const productManager = useManageProducts();
     const { bookmarks, keychains, pins, prints, stickers } = useProducts();
@@ -69,8 +69,6 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
             };
         }, [])
     );
-
-
 
     const handleSetCategory = (text: ProductCategory) => {
         setCategory(text);
@@ -178,7 +176,7 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
 
         const timestamp = initialTransaction ? initialTransaction.timestamp : getCurrentDateInPolishTimezone();
 
-        const newChatHistory: ChatMessage = {
+        const newTransaction: Transaction = {
             productName: product.name,
             productQuantity: quantity,
             productCategory: category,
@@ -190,8 +188,8 @@ export const useTransactionInput = (initialTransaction: ChatMessage | null = nul
 
         await productManager.mutations.handleUpdateStockForProduct(product, newQuantity);
 
-        if (initialTransaction) handleEditChatMessage(newChatHistory);
-        else handleAddChatMessage(newChatHistory);
+        if (initialTransaction) handleEditTransaction(newTransaction);
+        else handleAddTransaction(newTransaction);
 
         handleSetDefaultStates();
     }

@@ -1,10 +1,10 @@
 import { ProductCategory, Product } from '../products';
 
-type ChatMessage = {
+type Transaction = {
     productName: Product['name'];
     productQuantity: Product['stock'];
     productCategory: ProductCategory
     timestamp: Date;
 }
 
-export default ChatMessage;
+export default Transaction;

@@ -7,6 +7,7 @@ Auto-create new products json on day change
 Fix stock number change on transaction edit/delete - NOT IN THE ON SUBMIT EDITING IN USETRANSACTIONINPUT
 Fix original keyword restoring on keyboard hide
 Issue with typing quantity between 10 and 19, as it autoselects the 1 at the start
+Issue with transactions not restarting when coming from Transaction list -> old transaction -> products -> new transaction
 
 ## Improvements
 Add option for a bulk misc transaction (for when someone buys 10 stickers and there is no time to individually enter each one)

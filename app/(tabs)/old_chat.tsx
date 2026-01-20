@@ -3,10 +3,10 @@ import { View } from "react-native";
 
 import { Text } from '@/components';
 import { useTransactions } from '@/contexts/TransactionsContext';
-import { formatChatMessage } from '@/utils/common';
+import { formatTransaction } from '@/utils/common';
 
-const Chat = () => {
-  const { chatHistory } = useTransactions();
+const TransactionHistory = () => {
+  const { transactions } = useTransactions();
 
   return (
     <GestureHandlerRootView>
@@ -14,9 +14,9 @@ const Chat = () => {
         style={{ flexDirection: 'column', display: 'flex' }}
         contentContainerStyle={{ overflow: 'scroll', flexGrow: 1, justifyContent: 'flex-start', padding: 20 }}
       >
-        {chatHistory.map((chatHistoryElement, index) => (
+        {transactions.map((transaction, index) => (
           <View key={index}>
-            <Text style={{ color: 'white' }}>{formatChatMessage(chatHistoryElement)}</Text>
+            <Text style={{ color: 'white' }}>{formatTransaction(transaction)}</Text>
           </View>
         ))}
       </ScrollView>
@@ -24,4 +24,4 @@ const Chat = () => {
   )
 }
 
-export default Chat;
+export default TransactionHistory;

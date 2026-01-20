@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-import { ChatMessage } from "@/@types";
+import { Transaction } from "@/@types";
 import useCache from "@/hooks/useCache";
 import { date2YYYY_MM_DD } from "@/utils/common";
 
@@ -10,28 +10,26 @@ type DateRange = {
 };
 
 type TransactionsContextType = {
-    chatHistory: ChatMessage[];
+    transactions: Transaction[];
     dateRange: DateRange;
-    handleAddChatMessage: (message: ChatMessage) => void;
-    handleDeleteChatMessage: (message: ChatMessage) => void;
-    handleEditChatMessage: (newMessage: ChatMessage) => void;
+    handleAddTransaction: (transaction: Transaction) => void;
+    handleDeleteTransaction: (transaction: Transaction) => void;
+    handleEditTransaction: (newTransaction: Transaction) => void;
     readAllTransactionsFiles: () => Promise<string[]>;
     readTransactionsByFilename: (filename: string) => Promise<string | null>;
-    setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
     setDateRange: React.Dispatch<React.SetStateAction<DateRange>>;
     _setYYYY_MM_DD: React.Dispatch<React.SetStateAction<string>>;
     _YYYY_MM_DD: string;
 };
 
 const TransactionsContext = createContext<TransactionsContextType>({
-    chatHistory: [],
+    transactions: [],
     dateRange: { start: null, end: null },
-    handleAddChatMessage: () => { },
-    handleDeleteChatMessage: () => { },
-    handleEditChatMessage: () => { },
+    handleAddTransaction: () => { },
+    handleDeleteTransaction: () => { },
+    handleEditTransaction: () => { },
     readAllTransactionsFiles: () => Promise.resolve([]),
     readTransactionsByFilename: () => Promise.resolve(null),
-    setChatHistory: () => { },
     setDateRange: () => { },
     _setYYYY_MM_DD: () => { },
     _YYYY_MM_DD: ""
@@ -39,32 +37,32 @@ const TransactionsContext = createContext<TransactionsContextType>({
 
 export const TransactionsProvider = ({ children }: { children: React.ReactNode }) => {
     const [_YYYY_MM_DD, _setYYYY_MM_DD] = useState(date2YYYY_MM_DD(new Date()));
-    const [_storedMessages, _setStoredMessages] = useState<ChatMessage[]>([]);
-    const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+    const [_storedMessages, _setStoredMessages] = useState<Transaction[]>([]);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null });
     const { saveDataToCache: saveTransactionsToCache, readFileFromCache: readTransactionsFromCache, readAllFilesFromDirectory: readAllTransactionsFiles, readFileFromCacheByName: readTransactionsByFilename } = useCache(`chat_history_${_YYYY_MM_DD}.json`, 'chat_history');
 
     useEffect(() => {
         const readTransactions = async () => {
             try {
-                const cachedChatHistory = await readTransactionsFromCache();
-                if (!cachedChatHistory) return setChatHistory(_storedMessages);
+                const cachedTransactions = await readTransactionsFromCache();
+                if (!cachedTransactions) return setTransactions(_storedMessages);
 
-                setChatHistory(JSON.parse(cachedChatHistory, (_, value) => {
+                setTransactions(JSON.parse(cachedTransactions, (_, value) => {
                     value.timestamp = new Date(value.timestamp);
                     return value;
                 }));
 
                 _setStoredMessages([]);
             } catch (error) {
-                console.error(`[ERROR] HistoryProvider.readChatHistoryFromCache \n ${error}`);
+                console.error(`[ERROR] TransactionsProvider.readTransactions \n ${error}`);
             }
         };
 
         readTransactions();
     }, [_YYYY_MM_DD]);
 
-    const handleAddChatMessage = (message: ChatMessage) => {
+    const handleAddTransaction = (transaction: Transaction) => {
         //     // TODO this doesn't work
         // set message.timestamp to tomorrow's date for testing
         // message.timestamp = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
@@ -76,35 +74,34 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
         //     _setStoredMessages([message]);
         //     return [];
         // }
-        setChatHistory(prev => {
-            const newChatHistory = [...prev, message];
-            saveTransactionsToCache(JSON.stringify(newChatHistory));
-            return newChatHistory;
+        setTransactions(prev => {
+            const newTransactions = [...prev, transaction];
+            saveTransactionsToCache(JSON.stringify(newTransactions));
+            return newTransactions;
         });
     }
 
-    const handleDeleteChatMessage = (message: ChatMessage) => {
-        const newChatHistory = chatHistory.filter(m => m.timestamp !== message.timestamp);
-        setChatHistory(newChatHistory);
-        saveTransactionsToCache(JSON.stringify(newChatHistory));
+    const handleDeleteTransaction = (transaction: Transaction) => {
+        const newTransactions = transactions.filter(t => t.timestamp !== transaction.timestamp);
+        setTransactions(newTransactions);
+        saveTransactionsToCache(JSON.stringify(newTransactions));
     }
 
-    const handleEditChatMessage = (newMessage: ChatMessage) => {
-        const newChatHistory = chatHistory.map(m => m.timestamp === newMessage.timestamp ? newMessage : m);
-        setChatHistory(newChatHistory);
-        saveTransactionsToCache(JSON.stringify(newChatHistory));
+    const handleEditTransaction = (newTransaction: Transaction) => {
+        const newTransactions = transactions.map(t => t.timestamp === newTransaction.timestamp ? newTransaction : t);
+        setTransactions(newTransactions);
+        saveTransactionsToCache(JSON.stringify(newTransactions));
     }
 
     return (
         <TransactionsContext.Provider value={{
-            chatHistory,
+            transactions,
             dateRange,
-            handleAddChatMessage,
-            handleDeleteChatMessage,
-            handleEditChatMessage,
+            handleAddTransaction,
+            handleDeleteTransaction,
+            handleEditTransaction,
             readAllTransactionsFiles,
             readTransactionsByFilename,
-            setChatHistory,
             setDateRange,
             _setYYYY_MM_DD,
             _YYYY_MM_DD

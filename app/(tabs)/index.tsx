@@ -4,23 +4,23 @@ import { useCallback, useRef, useState } from 'react';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import { Keyboard, TextInput, View } from "react-native";
 
-import { ChatMessage } from '@/@types';
+import { Transaction } from '@/@types';
 import { ConfirmModal, Input, SuggestionButton, Text } from '@/components';
 import { useTransactions } from '@/contexts/TransactionsContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { formatChatMessage } from '@/utils/common';
+import { formatTransaction } from '@/utils/common';
 import { InputStates, useTransactionInput } from '@/stories/useTransactionInput';
 import { EditTransactionModal } from '@/components/(tabs)/index/EditTransactionModal';
 
-const Chat = () => {
-  const { chatHistory, handleDeleteChatMessage } = useTransactions();
+const Transactions = () => {
+  const { handleDeleteTransaction, transactions } = useTransactions();
   const { COLORS } = useTheme();
 
   const { handleSetCategory, handleSetProduct, inputValue, inputState, onChangeInputText, onSubmitEditing, productSuggestions, categorySuggestions } = useTransactionInput();
 
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
   const [isEditingTransaction, setIsEditingTransaction] = useState(false);
-  const [transactionSelectedForEditOrRemoval, setTransactionSelectedForEditOrRemoval] = useState<ChatMessage | null>(null);
+  const [transactionSelectedForEditOrRemoval, setTransactionSelectedForEditOrRemoval] = useState<Transaction | null>(null);
   const scrollRef = useRef<ScrollView>(null);
   const inputRef = useRef<TextInput>(null);
 
@@ -68,10 +68,10 @@ const Chat = () => {
         <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ flexGrow: 1 }} persistentScrollbar={true} ref={scrollRef}
           indicatorStyle='white'
         >
-          {chatHistory.map((chatHistoryElement, index) => (
-            <View key={index} style={{ marginVertical: 2, flexDirection: 'row', borderBottomColor: index === chatHistory.length - 1 ? COLORS.borderColor : '#454545', borderBottomWidth: 1, }}>
+          {transactions.map((transaction, index) => (
+            <View key={index} style={{ marginVertical: 2, flexDirection: 'row', borderBottomColor: index === transactions.length - 1 ? COLORS.borderColor : '#454545', borderBottomWidth: 1, }}>
               <Text style={{ color: 'white', padding: 2, width: '80%' }}>
-                {formatChatMessage(chatHistoryElement)}
+                {formatTransaction(transaction)}
               </Text>
               <Ionicons
                 name='pencil'
@@ -80,7 +80,7 @@ const Chat = () => {
                 style={{ marginLeft: 5, alignSelf: 'center' }}
                 onPress={() => {
                   setIsEditingTransaction(true);
-                  setTransactionSelectedForEditOrRemoval(chatHistoryElement);
+                  setTransactionSelectedForEditOrRemoval(transaction);
                 }}
               />
               <Ionicons
@@ -90,7 +90,7 @@ const Chat = () => {
                 style={{ marginLeft: 20, alignSelf: 'center' }}
                 onPress={() => {
                   setIsConfirmDeleteModalOpen(true);
-                  setTransactionSelectedForEditOrRemoval(chatHistoryElement);
+                  setTransactionSelectedForEditOrRemoval(transaction);
                 }}
               />
             </View>
@@ -108,9 +108,9 @@ const Chat = () => {
           {isConfirmDeleteModalOpen && transactionSelectedForEditOrRemoval && (
             <ConfirmModal
               title='Confirm transaction deletion'
-              text={`Are you sure you want to delete the transaction: "${formatChatMessage(transactionSelectedForEditOrRemoval)}"?`}
+              text={`Are you sure you want to delete the transaction: "${formatTransaction(transactionSelectedForEditOrRemoval)}"?`}
               onConfirm={() => {
-                handleDeleteChatMessage(transactionSelectedForEditOrRemoval);
+                handleDeleteTransaction(transactionSelectedForEditOrRemoval);
                 setIsConfirmDeleteModalOpen(false);
                 setTransactionSelectedForEditOrRemoval(null);
                 inputRef.current?.focus();
@@ -125,7 +125,7 @@ const Chat = () => {
           {isEditingTransaction && transactionSelectedForEditOrRemoval && (
             <EditTransactionModal
               title="Edit transaction"
-              text={`Edit the transaction: "${formatChatMessage(transactionSelectedForEditOrRemoval)}"`}
+              text={`Edit the transaction: "${formatTransaction(transactionSelectedForEditOrRemoval)}"`}
               transaction={transactionSelectedForEditOrRemoval}
               onConfirm={() => {
                 setIsEditingTransaction(false);
@@ -145,4 +145,4 @@ const Chat = () => {
   )
 }
 
-export default Chat;
+export default Transactions;
