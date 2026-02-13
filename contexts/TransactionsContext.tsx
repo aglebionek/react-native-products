@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { Transaction } from "@/@types";
 import useCache from "@/hooks/useCache";
-import { date2YYYY_MM_DD } from "@/utils/common";
+import { getCurrentDateInYYYY_MM_DD } from "@/utils/common";
 
 type DateRange = {
     start: Date | null;
@@ -36,7 +36,7 @@ const TransactionsContext = createContext<TransactionsContextType>({
 });
 
 export const TransactionsProvider = ({ children }: { children: React.ReactNode }) => {
-    const [_YYYY_MM_DD, _setYYYY_MM_DD] = useState(date2YYYY_MM_DD(new Date()));
+    const [_YYYY_MM_DD, _setYYYY_MM_DD] = useState(getCurrentDateInYYYY_MM_DD());
     const [_storedMessages, _setStoredMessages] = useState<Transaction[]>([]);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null });
