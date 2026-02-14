@@ -1,0 +1,4 @@
+IP=192.168.0.136
+PORT=$1
+CODE=$2
+adb pair $IP:$PORT $CODE
