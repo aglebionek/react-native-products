@@ -135,7 +135,7 @@ export const useTransactionInput = (initialTransaction: Transaction | null = nul
                     valuesToFilter = productsCategories[category as ProductCategory];
                 }
 
-                filteredProducts = valuesToFilter.filter(product => product.stock > 0).filter(product => {
+                filteredProducts = valuesToFilter.filter(product => {
                     return keywords.every((kw) => product.keywords.some((productKw) => productKw.toLowerCase().startsWith(kw.toLowerCase())));
                 });
                 filteredProducts.sort((a, b) => {
