@@ -4,11 +4,15 @@
 - Android Debug Bridge (ADB) for Android
 - Android device with wireless debugging enabled
 
-# ADB and SDK installation
+# ADB, SDK and JRE installation
+sudo apt install default-jre
 sudo apt install adb
 sudo apt install android-sdk
+sudo apt install google-android-cmdline-tools-11.0-installer
 ANDROID_HOME=/usr/lib/android-sdk
 export ANDROID_HOME=/usr/lib/android-sdk
+
+# You might need to run sdkmanager --licenses to accept the licenses for the Android SDK components.
 
 # How to setup
 1. In the wireless debugging setting click on "Pair device with pairing code"
