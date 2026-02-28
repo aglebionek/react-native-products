@@ -8,7 +8,7 @@ enum PRODUCT_TYPE {
 
 type PrintFormat = 'A4' | 'A5' | 'A6';
 
-type ProductCategory = 'N' | PrintFormat;
+type ProductCategory =  PrintFormat | 'B' | 'N' | 'P' | 'Z';
 
 type BaseProduct = {
     name: string;

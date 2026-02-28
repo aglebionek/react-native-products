@@ -7,7 +7,7 @@ export const SuggestionButton = ({ onPress, text }: { onPress: () => void; text:
     const { COLORS } = useTheme();
 
     let fontSize = 18;
-    if (text.length > 9 && text.length <= 15) {
+    if (text.length >= 9 && text.length <= 15) {
         fontSize = 14;
     } else if (text.length > 15) {
         fontSize = 10;
