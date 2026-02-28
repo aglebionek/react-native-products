@@ -18,6 +18,7 @@ type TransactionsContextType = {
     readAllTransactionsFiles: () => Promise<string[]>;
     readTransactionsByFilename: (filename: string) => Promise<string | null>;
     setDateRange: React.Dispatch<React.SetStateAction<DateRange>>;
+    transactionsLoaded: boolean;
     _setYYYY_MM_DD: React.Dispatch<React.SetStateAction<string>>;
     _YYYY_MM_DD: string;
 };
@@ -31,6 +32,7 @@ const TransactionsContext = createContext<TransactionsContextType>({
     readAllTransactionsFiles: () => Promise.resolve([]),
     readTransactionsByFilename: () => Promise.resolve(null),
     setDateRange: () => { },
+    transactionsLoaded: false,
     _setYYYY_MM_DD: () => { },
     _YYYY_MM_DD: ""
 });
@@ -41,6 +43,7 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null });
     const { saveDataToCache: saveTransactionsToCache, readFileFromCache: readTransactionsFromCache, readAllFilesFromDirectory: readAllTransactionsFiles, readFileFromCacheByName: readTransactionsByFilename } = useCache(`chat_history_${_YYYY_MM_DD}.json`, 'chat_history');
+    const [transactionsLoaded, setTransactionsLoaded] = useState(false);
 
     useEffect(() => {
         const readTransactions = async () => {
@@ -56,6 +59,8 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
                 _setStoredMessages([]);
             } catch (error) {
                 console.error(`[ERROR] TransactionsProvider.readTransactions \n ${error}`);
+            } finally {
+                setTransactionsLoaded(true);
             }
         };
 
@@ -103,6 +108,7 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
             readAllTransactionsFiles,
             readTransactionsByFilename,
             setDateRange,
+            transactionsLoaded,
             _setYYYY_MM_DD,
             _YYYY_MM_DD
         }}>
