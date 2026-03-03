@@ -1,3 +1,13 @@
+Currently WIP
+
+# What is this?
+This is an app I'm developing for managing transactions for selling merchendise on conventions. 
+There are a few predifined product types - Stickers, Prints, Bookmarks, etc.
+
+You can add products, select their type and add keywords.
+In the main view, you can see a list of transactions for today, edit/remove them, and add a new one. Based on your input, there are up to 3 suggestion for the product to speed up the handling process.
+You can also browse transactions for previous days, and download them as a CSV for Excel compatibility.
+
 # Development Environment
 - WSL2 with Ubuntu 24.04 LTS
 - Visual Studio Code with Remote - WSL extension
@@ -12,7 +22,7 @@ sudo apt install google-android-cmdline-tools-11.0-installer
 ANDROID_HOME=/usr/lib/android-sdk
 export ANDROID_HOME=/usr/lib/android-sdk
 
-# You might need to run sdkmanager --licenses to accept the licenses for the Android SDK components.
+## You might need to run sdkmanager --licenses to accept the licenses for the Android SDK components.
 
 # How to setup
 1. In the wireless debugging setting click on "Pair device with pairing code"
