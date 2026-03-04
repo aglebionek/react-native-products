@@ -1,0 +1,5 @@
+path-to-worktree: ../worktrees/feature/new-filesystem-api
+branch-name: feature/new-filesystem-api
+model-name: claude-opus-4.6
+task: Upgrade useCache to new expo-file-system API with append support
+started: $(date -u +"%Y-%m-%dT%H:%M:%SZ")

@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Transaction } from "@/@types";
 import useCache from "@/hooks/useCache";
 import { getCurrentDateInYYYY_MM_DD } from "@/utils/common";
+import { convertCsvTransactions2Json } from "@/utils/common/conversions";
 
 type DateRange = {
     start: Date | null;
@@ -51,10 +52,9 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
                 const cachedTransactions = await readTransactionsFromCache();
                 if (!cachedTransactions) return setTransactions(_storedMessages);
 
-                setTransactions(JSON.parse(cachedTransactions, (_, value) => {
-                    value.timestamp = new Date(value.timestamp);
-                    return value;
-                }));
+                const parsedTransactions = convertCsvTransactions2Json(cachedTransactions);
+
+                setTransactions(parsedTransactions);
 
                 _setStoredMessages([]);
             } catch (error) {

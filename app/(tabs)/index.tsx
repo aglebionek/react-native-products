@@ -56,7 +56,7 @@ const Transactions = () => {
           value={inputValue}
           onChangeText={onChangeInputText}
           keyboardType={inputState === InputStates.SELECTING_QUANTITY ? 'number-pad' : 'default'}
-          blurOnSubmit={false}
+          submitBehavior='submit'
           onSubmitEditing={handleSubmitEditing}
           id='transaction-input'
           includeClearButton={true}
@@ -69,7 +69,8 @@ const Transactions = () => {
           indicatorStyle='white'
         >
           {transactions.map((transaction, index) => (
-            <View key={index} style={{ marginVertical: 2, flexDirection: 'row', borderBottomColor: index === transactions.length - 1 ? COLORS.borderColor : '#454545', borderBottomWidth: 1, }}>
+            <View key={index} 
+            style={{ marginVertical: 2, flexDirection: 'row', borderBottomColor: index === transactions.length - 1 ? COLORS.borderColor : '#454545', borderBottomWidth: 1, }}>
               <Text style={{ color: 'white', padding: 2, width: '80%' }}>
                 {formatTransaction(transaction)}
               </Text>

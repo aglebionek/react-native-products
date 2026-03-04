@@ -52,6 +52,12 @@ export const getCurrentDateInYYYY_MM_DD = (): string => {
     return date2YYYY_MM_DD(currentDate);
 }
 
+export const string2Date = (date:string, time: string): Date => {
+    const [day, month, year] = date.split('.').map(part => parseInt(part, 10));
+    const [hours, minutes, seconds] = time.split(':').map(part => parseInt(part, 10));
+    return new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds));
+}
+
 export const formatTransaction = (transaction: Transaction) => {
   return `${date2String(transaction.timestamp).time} - ${transaction.productCategory} ${transaction.productName} ${transaction.productQuantity}`;
 }

@@ -1,6 +1,6 @@
 import { useFonts } from 'expo-font';
 import * as NativeSplash from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { useProducts } from '@/contexts/ProductsContext';
 import { useTheme } from '@/contexts/ThemeContext';
