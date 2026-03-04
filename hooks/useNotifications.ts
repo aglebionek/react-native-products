@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import { type EventSubscription } from 'expo-modules-core';
 import { startActivityAsync } from 'expo-intent-launcher';
 import Constants from 'expo-constants';
 import { useEffect, useRef, useState } from 'react';
@@ -6,7 +7,8 @@ import { Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldShowAlert: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
         shouldPlaySound: false,
         shouldSetBadge: false,
     }),
@@ -23,8 +25,8 @@ const useNotifications = ({ onNotificationClicked = () => { }, onNotificationSho
     const [notification, setNotification] = useState<Notifications.Notification | undefined>(
         undefined
     );
-    const notificationListener = useRef<Notifications.Subscription>();
-    const responseListener = useRef<Notifications.Subscription>();
+    const notificationListener = useRef<EventSubscription>(null);
+    const responseListener = useRef<EventSubscription>(null);
 
     useEffect(() => {
         registerForPushNotificationsAsync().then(token => token && setExpoPushToken(token));
@@ -44,10 +46,8 @@ const useNotifications = ({ onNotificationClicked = () => { }, onNotificationSho
         });
 
         return () => {
-            notificationListener.current &&
-                Notifications.removeNotificationSubscription(notificationListener.current);
-            responseListener.current &&
-                Notifications.removeNotificationSubscription(responseListener.current);
+            notificationListener.current?.remove();
+            responseListener.current?.remove();
         };
     }, []);
 

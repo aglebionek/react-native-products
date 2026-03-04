@@ -8,6 +8,8 @@ cd "../worktrees/${BRANCH_NAME}"
 ROOT_DIR=$(pwd)
 
 ln -s "$ROOT_DIR/node_modules" node_modules
+ln -s "$ROOT_DIR/android" android
+ln -s "$ROOT_DIR/.expo" .expo
 
 cat > .worktree-session <<EOF
 path-to-worktree: ../worktrees/${BRANCH_NAME}

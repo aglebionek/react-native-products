@@ -9,12 +9,10 @@ const useCache = (cachedFileName: string, cachedFileDirectory: string = "") => {
         return d;
     }, [cachedFileDirectory]);
 
-    const file = useMemo(
-        () => dir
-            ? new File(dir, cachedFileName)
-            : new File(Paths.cache, cachedFileName),
-        [dir, cachedFileName],
-    );
+    const file = useMemo(() => {
+        if (dir) return new File(dir, cachedFileName);
+        return new File(Paths.cache, cachedFileName);
+    }, [dir, cachedFileName]);
 
     const checkIfFileExistsInCache = useCallback(() => {
         try {

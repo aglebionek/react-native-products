@@ -4,7 +4,7 @@ import { GestureHandlerRootView, TextInput } from "react-native-gesture-handler"
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button, Input, Text } from "@/components/common";
 import { Transaction } from "@/@types";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { InputStates, useTransactionInput } from "@/stories/useTransactionInput";
 import { SuggestionButton } from "./SuggestionButton";
 import { useFocusEffect } from "expo-router";
@@ -21,6 +21,7 @@ export const EditTransactionModal = ({ title, text, transaction, onConfirm, onCa
     const { COLORS } = useTheme();
     const { handleSetCategory, handleSetProduct, inputValue, inputState, onChangeInputText, onSubmitEditing, productSuggestions, categorySuggestions } = useTransactionInput(transaction);
 
+    const [select, setSelect] = useState(true);
     const inputRef = useRef<TextInput>(null);
 
     useFocusEffect(
@@ -33,6 +34,7 @@ export const EditTransactionModal = ({ title, text, transaction, onConfirm, onCa
 
     const handleConfirm = () => {
         onSubmitEditing();
+        setSelect(true);
         onConfirm();
     }
 
@@ -45,15 +47,18 @@ export const EditTransactionModal = ({ title, text, transaction, onConfirm, onCa
 
                 <Input
                     placeholder="New transaction"
-                    selection={inputState === InputStates.SELECTING_QUANTITY ? { start: inputValue.length - 1, end: inputValue.length } : undefined}
+                    selection={(inputState === InputStates.SELECTING_QUANTITY && select) ? { start: inputValue.length - 1, end: inputValue.length } : undefined}
                     value={inputValue}
                     onChangeText={onChangeInputText}
                     keyboardType={inputState === InputStates.SELECTING_QUANTITY ? 'number-pad' : 'default'}
-                    blurOnSubmit={false}
+                    submitBehavior="submit"
                     onSubmitEditing={handleConfirm}
                     id='transaction-input'
                     includeClearButton={true}
                     innerRef={inputRef}
+                    onKeyPress={() => {
+                        if (inputState === InputStates.SELECTING_QUANTITY) setSelect(false);
+                    }}
                 />
 
                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 20, height: 40, marginBottom: 10 }}>
