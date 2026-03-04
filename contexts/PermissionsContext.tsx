@@ -1,4 +1,5 @@
-import * as FileSystem from 'expo-file-system';
+import { StorageAccessFramework } from 'expo-file-system/legacy';
+import { File } from 'expo-file-system';
 import { createContext, useContext, useEffect, useState } from "react";
 
 import useCache from "@/hooks/useCache";
@@ -34,9 +35,9 @@ export const PermissionsProvider = ({ children }: { children: React.ReactNode })
     }, []);
 
     const _handleRequestDownloadDirectoryPermission = async () => {
-        const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+        const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
         if (!permissions.granted) return null;
-        await saveDataToCache(permissions.directoryUri);
+        saveDataToCache(permissions.directoryUri);
         _setDownloadDirectory(permissions.directoryUri);
         return permissions.directoryUri;
     }
@@ -50,8 +51,9 @@ export const PermissionsProvider = ({ children }: { children: React.ReactNode })
                 if (!targetDirectory) return null;
             }
             
-            const fileUri = await FileSystem.StorageAccessFramework.createFileAsync(targetDirectory, fileName, mimeType)
-            await FileSystem.writeAsStringAsync(fileUri, content, { encoding: FileSystem.EncodingType.UTF8 });
+            const fileUri = await StorageAccessFramework.createFileAsync(targetDirectory, fileName, mimeType)
+            const file = new File(fileUri);
+            file.write(content);
             return fileUri;
         } catch (error) {
             console.error(`[ERROR] PermissionsContextProvider.handleDownloadFile \n ${error}`);
