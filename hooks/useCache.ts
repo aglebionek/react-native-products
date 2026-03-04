@@ -1,88 +1,91 @@
-import { cacheDirectory, getInfoAsync, readAsStringAsync, writeAsStringAsync, readDirectoryAsync, makeDirectoryAsync } from "expo-file-system";
-import { useCallback, useEffect } from "react";
+import { File, Directory, Paths } from "expo-file-system";
+import { useCallback, useMemo } from "react";
 
 const useCache = (cachedFileName: string, cachedFileDirectory: string = "") => {
-    if (cachedFileDirectory && !cachedFileDirectory.endsWith('/')) cachedFileDirectory += '/';
-    const cachedFilePath = `${cacheDirectory}${cachedFileDirectory}${cachedFileName}`;
+    const dir = useMemo(() => {
+        if (!cachedFileDirectory) return null;
+        const d = new Directory(Paths.cache, cachedFileDirectory);
+        if (!d.exists) d.create({ intermediates: true, idempotent: true });
+        return d;
+    }, [cachedFileDirectory]);
 
-    useEffect(() => {
-        if (cachedFileDirectory === "") return;
-        const createDirectory = async () => {
-            try {
-                const directory = `${cacheDirectory}${cachedFileDirectory}`;
-                await makeDirectoryAsync(directory, { intermediates: true });
-            } catch (error) {
-                console.error(error);
-                console.error("Failed to create cache directory");
-            }
-        };
-        createDirectory();
-    }, []);
+    const file = useMemo(
+        () => dir
+            ? new File(dir, cachedFileName)
+            : new File(Paths.cache, cachedFileName),
+        [dir, cachedFileName],
+    );
 
-    const checkIfFileExistsInCache = useCallback(async () => {
+    const checkIfFileExistsInCache = useCallback(() => {
         try {
-            const { exists, isDirectory } = await getInfoAsync(cachedFilePath);
-            return exists && !isDirectory;
+            return file.exists;
         } catch (error) {
             console.error(error);
             console.error("Failed to check if file exists in cache");
             return false;
         }
-    }, [cachedFilePath]);
+    }, [file]);
 
     const readFileFromCache = useCallback(async () => {
         try {
-            if (await checkIfFileExistsInCache()) {
-                return readAsStringAsync(cachedFilePath);
-            }
-            return null;
+            if (!file.exists) return null;
+            return await file.text();
         } catch (error) {
             console.error(error);
             console.error("Failed to read file from cache");
             return null;
         }
-    }, [cachedFilePath]);
+    }, [file]);
 
-    const saveDataToCache = useCallback(async (data: string) => {
+    const saveDataToCache = useCallback((data: string) => {
         try {
-            await writeAsStringAsync(cachedFilePath, data);
+            file.write(data);
             return true;
         } catch (error) {
             console.error(error);
             console.error("Failed to save data to cache");
             return false;
         }
-    }, [cachedFilePath]);
+    }, [file]);
 
-    const readAllFilesFromDirectory = useCallback(async () => {
+    const appendLineToFile = useCallback((line: string) => {
         try {
-            if (cachedFileDirectory === "") return [];
-            const directory = `${cacheDirectory}${cachedFileDirectory}`;
-            const { exists, isDirectory } = await getInfoAsync(directory);
-            if (exists && isDirectory) return readDirectoryAsync(directory);
-            return [];
+            const content = file.exists ? `\n${line}` : line;
+            file.write(content, { append: true });
+            return true;
+        } catch (error) {
+            console.error(error);
+            console.error("Failed to append line to cache file");
+            return false;
+        }
+    }, [file]);
+
+    const readAllFilesFromDirectory = useCallback(() => {
+        try {
+            if (!dir || !dir.exists) return [];
+            return dir.list().map(entry => entry.name);
         } catch (error) {
             console.error(error);
             console.error("Failed to read all files from cache");
             return [];
         }
-    }, []);
+    }, [dir]);
 
     const readFileFromCacheByName = useCallback(async (fileName: string) => {
         try {
-            const filePath = `${cacheDirectory}${cachedFileDirectory}${fileName}`;
-            if (await getInfoAsync(filePath).then(info => info.exists && !info.isDirectory)) {
-                return readAsStringAsync(filePath);
-            }
-            return null;
+            const target = dir
+                ? new File(dir, fileName)
+                : new File(Paths.cache, fileName);
+            if (!target.exists) return null;
+            return await target.text();
         } catch (error) {
             console.error(error);
             console.error("Failed to read file from cache by name");
             return null;
         }
-    }, [cachedFileDirectory]);
+    }, [dir]);
 
-    return { checkIfFileExistsInCache, readFileFromCache, saveDataToCache, readAllFilesFromDirectory, readFileFromCacheByName };
+    return { checkIfFileExistsInCache, readFileFromCache, saveDataToCache, appendLineToFile, readAllFilesFromDirectory, readFileFromCacheByName };
 }
 
 export default useCache;

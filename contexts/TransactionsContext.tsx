@@ -15,7 +15,7 @@ type TransactionsContextType = {
     handleAddTransaction: (transaction: Transaction) => void;
     handleDeleteTransaction: (transaction: Transaction) => void;
     handleEditTransaction: (newTransaction: Transaction) => void;
-    readAllTransactionsFiles: () => Promise<string[]>;
+    readAllTransactionsFiles: () => string[];
     readTransactionsByFilename: (filename: string) => Promise<string | null>;
     setDateRange: React.Dispatch<React.SetStateAction<DateRange>>;
     transactionsLoaded: boolean;
@@ -29,7 +29,7 @@ const TransactionsContext = createContext<TransactionsContextType>({
     handleAddTransaction: () => { },
     handleDeleteTransaction: () => { },
     handleEditTransaction: () => { },
-    readAllTransactionsFiles: () => Promise.resolve([]),
+    readAllTransactionsFiles: () => [],
     readTransactionsByFilename: () => Promise.resolve(null),
     setDateRange: () => { },
     transactionsLoaded: false,

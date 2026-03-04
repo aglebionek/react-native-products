@@ -41,11 +41,8 @@ const Chat = () => {
   const [chatHistoryFiles, setChatHistoryFiles] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchChatHistory = async () => {
-      const files = await readAllTransactionsFiles();
-      setChatHistoryFiles(files.filter(file => file.startsWith('chat_history_') && file.endsWith('.json')).sort().reverse());
-    };
-    fetchChatHistory();
+    const files = readAllTransactionsFiles();
+    setChatHistoryFiles(files.filter(file => file.startsWith('chat_history_') && file.endsWith('.json')).sort().reverse());
   }, [readAllTransactionsFiles]);
 
   const convertChatHistoryToCSV = async (filename: string) => {
