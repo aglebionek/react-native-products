@@ -194,5 +194,5 @@ export const useTransactionInput = (initialTransaction: Transaction | null = nul
         handleSetDefaultStates();
     }
 
-    return { handleSetCategory, handleSetProduct, inputValue, inputState, onChangeInputText, onSubmitEditing, categorySuggestions, productSuggestions }
+    return { handleSetCategory, handleSetProduct, inputValue, inputState, onChangeInputText, onSubmitEditing, categorySuggestions, productSuggestions, quantity }
 }

@@ -100,7 +100,7 @@ const BrowseProducts = () => {
     }, [mergedProducts]);
 
     return (
-        <View style={{ padding: 10 }}>
+        <View style={{ padding: 10, paddingBottom: 100, flex: 1 }}>
             {(currentNavigationView === NAVIGATION_VIEWS.PRODUCTS_LIST || currentNavigationView === NAVIGATION_VIEWS.EDIT_PRODUCT) && (
                 <View>
                     <View style={{ flexDirection: 'row', height: 40, gap: 5, marginBottom: 10 }}>

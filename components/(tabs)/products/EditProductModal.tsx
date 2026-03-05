@@ -80,7 +80,7 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
 
     return (
         <Modal animationType="slide" transparent={false} visible={true} >
-            <LinearGradient colors={[COLORS.backgroundStart, COLORS.backgroundMiddle, COLORS.backgroundEnd]} style={{ flex: 1 }}>
+            <LinearGradient colors={[COLORS.backgroundStart, COLORS.backgroundMiddle, COLORS.backgroundEnd]} style={{ flex: 1, paddingTop: 40 }}>
                 <GestureHandlerRootView>
 
                     <View style={{

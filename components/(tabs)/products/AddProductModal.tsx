@@ -132,7 +132,7 @@ const AddProduct = ({ onClose }: AddProductProps) => {
 
     return (
         <Modal animationType="slide" transparent={false} visible={true} >
-            <LinearGradient colors={[COLORS.backgroundStart, COLORS.backgroundMiddle, COLORS.backgroundEnd]} style={{ flex: 1 }}>
+            <LinearGradient colors={[COLORS.backgroundStart, COLORS.backgroundMiddle, COLORS.backgroundEnd]} style={{ flex: 1, paddingTop: 40 }}>
                 <GestureHandlerRootView>
 
                     <View style={{
@@ -349,6 +349,7 @@ const EditableKeywordTag = ({ keyword, onChangeKeyword, onSubmitEditing }: { key
                 style={{ color: 'white', marginRight: 5, minWidth: 50, height: 20, padding: 0 }}
                 autoFocus
                 onSubmitEditing={onSubmitEditing}
+                onBlur={onSubmitEditing}
             />
             <Ionicons
                 name="close-circle"

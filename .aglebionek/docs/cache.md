@@ -1,26 +1,31 @@
 # Cache System
 
-The app has no remote backend. All persistent data is stored in **Expo's file-system cache** (`expo-file-system` `cacheDirectory`).
+The app has no remote backend. All persistent data is stored in **Expo's file-system cache** using `expo-file-system` (`File`, `Directory`, `Paths` API).
 
 ## useCache Hook (`hooks/useCache.ts`)
 
 ```ts
 const {
-  checkIfFileExistsInCache,
-  readFileFromCache,        // → Promise<string | null>
-  saveDataToCache,          // (data: string) → Promise<boolean>
-  readAllFilesFromDirectory,// → Promise<string[]>  (only when directory is set)
-  readFileFromCacheByName,  // (fileName: string) → Promise<string | null>
+  checkIfFileExistsInCache,  // → boolean (sync)
+  readFileFromCache,         // → Promise<string | null>
+  saveDataToCache,           // (data: string) → boolean (sync)
+  appendLineToFile,          // (line: string) → boolean (sync) — appends without reading
+  readAllFilesFromDirectory, // → string[] (sync, only when directory is set)
+  readFileFromCacheByName,   // (fileName: string) → Promise<string | null>
 } = useCache(cachedFileName, cachedFileDirectory?)
 ```
 
 **Parameters:**
 - `cachedFileName` — filename within the cache (e.g. `stickers.json`, `colormode.txt`).
-- `cachedFileDirectory` — optional sub-directory (e.g. `chat_history`). When provided, the directory is created via `makeDirectoryAsync` on mount.
+- `cachedFileDirectory` — optional sub-directory (e.g. `chat_history`). When provided, the directory is created synchronously via `Directory.create()` on first render.
 
-**Resolved path:** `<cacheDirectory>[cachedFileDirectory/]cachedFileName`
+**Resolved path:** `Paths.cache / [cachedFileDirectory /] cachedFileName`
 
-All operations are `useCallback`-memoised. Errors are logged to console and return a safe fallback (`null` / `false` / `[]`).
+**Sync vs Async:** Most operations are **synchronous** thanks to the new `expo-file-system` JSI-based API. Only `readFileFromCache` and `readFileFromCacheByName` remain async (they use `File.text()`). All operations are `useCallback`/`useMemo`-memoised. Errors are logged to console and return a safe fallback (`null` / `false` / `[]`).
+
+### appendLineToFile
+
+Appends a single line to the file using `File.write(content, { append: true })`. This is O(1) — no need to read the file first. Prepends a newline separator if the file already exists.
 
 ## What Is Cached
 

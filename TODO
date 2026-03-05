@@ -1,22 +1,25 @@
 ## Critical
 Create a backup of products for loading issues (as to not overwrite existing data)
 Optimzaction issues:
-- app starts to lag if there are many transactions added in a day. Add pagination to transaction list, and only load transactions for the current day in the history chat. Auto load more on scroll down.
-- lower the size of JSONs? Maybe make the keys shorter
+- app starts to lag if there are many transactions added in a day. 
+Add pagination to transaction list in history chat, and only load transactions for the current day in the history chat.
+- lower the size of product JSONs? Maybe make the keys shorter
 
 ## Bugs
 Edit product - auto-select the stock number, add keyword on focus change
 Auto-create new products json on day change
 Fix stock number change on transaction edit/delete - NOT IN THE ON SUBMIT EDITING IN USETRANSACTIONINPUT
 Fix original keyword restoring on keyboard hide
-Issue with typing quantity between 10 and 19, as it autoselects the 1 at the start
 Issue with transactions not restarting when coming from Transaction list -> old transaction -> products -> new transaction
 Keywords duplicate input when typing fast (On swiftkeyboard)?
+Fix typescript issues in files.tsx.
 <!-- DONT HIDE PRODUCTS ON 0 stock for now -->
 
 ## Improvements
-Add option for a bulk misc transaction (for when someone buys 10 stickers and there is no time to individually enter each one)
-Add option to remove old chat histories
+Convert functions to sync where possible.
+Clean up CSV/JSON conversion code.
+Improve the scrolling issues when loading more transactions, show a correct visual indicator when are loading more transactions.
+Add option to remove old chat histories.
 Add option to export all products of a category to JSON, and be able to import them back to update products in bulk. Would need a check for duplicate names.
 Add a short delay when showing modals to await keyboard opening for better visuals
 

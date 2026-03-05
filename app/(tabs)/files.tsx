@@ -6,14 +6,13 @@ import { useEffect, useState } from 'react';
 import { Pressable, ToastAndroid, View } from "react-native";
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
-import { Transaction } from '@/@types';
 import { Text } from '@/components';
 import { useTransactions } from '@/contexts/TransactionsContext';
 import { NAVIGATION_VIEW_PATHNAMES, NAVIGATION_VIEWS, useNavigationContext } from '@/contexts/NavigationContext';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import useNotifications from '@/hooks/useNotifications';
-import { date2String, getCurrentDateInYYYY_MM_DD } from '@/utils/common';
+import { getCurrentDateInYYYY_MM_DD } from '@/utils/common';
 
 const extractYYYY_MM_DD = (filename: string) => {
   const match = filename.match(/chat_history_(\d{4}_\d{2}_\d{2})\.json/);
@@ -29,6 +28,7 @@ const Chat = () => {
 
   const onNotificationClicked = async (response: NotificationResponse) => {
     const data = response.notification.request.content.data;
+    // TODO: TS ISSUE
     await startActivityAsync('android.intent.action.VIEW', {
       data: data.fileUri,
       flags: 1,
@@ -41,21 +41,13 @@ const Chat = () => {
   const [chatHistoryFiles, setChatHistoryFiles] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchChatHistory = async () => {
-      const files = await readAllTransactionsFiles();
-      setChatHistoryFiles(files.filter(file => file.startsWith('chat_history_') && file.endsWith('.json')).sort().reverse());
-    };
-    fetchChatHistory();
+    const files = readAllTransactionsFiles();
+    setChatHistoryFiles(files.filter(file => file.startsWith('chat_history_') && file.endsWith('.json')).sort().reverse());
   }, [readAllTransactionsFiles]);
 
   const convertChatHistoryToCSV = async (filename: string) => {
-    const selectedTransactions = await readTransactionsByFilename(filename);
-    if (!selectedTransactions) return "";
-    const rows = JSON.parse(selectedTransactions).map((message: Transaction) => {
-      const date = date2String(new Date(message.timestamp));
-      return `${date.date}, ${date.time}, ${message.productCategory}, ${message.productName}, ${message.productQuantity}`;
-    });
-    return rows.join("\n");
+    // File is now stored in CSV format natively — return it directly
+    return await readTransactionsByFilename(filename) ?? "";
   }
 
   const handleDownloadCSV = async (chatHistoryElement: string) => {
@@ -73,7 +65,7 @@ const Chat = () => {
     const mimetype = 'text/csv';
 
     const fileUri = await handleDownloadFile(filename, csvData, mimetype);
-    const trigger = { seconds: 1, repeats: false } as NotificationTriggerInput;
+    const trigger = { seconds: 1, repeats: false, type: 'timeInterval' } as NotificationTriggerInput;
     const content = {
       autoDismiss: true,
       title: `File ${filename} download failed`,

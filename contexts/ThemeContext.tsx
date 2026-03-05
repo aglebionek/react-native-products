@@ -1,4 +1,4 @@
-import { ThemeProvider as NativeThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider as NativeThemeProvider } from '@react-navigation/native';
 import { createContext, useContext, useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
 
@@ -25,10 +25,11 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     const { readFileFromCache, saveDataToCache } = useCache('colormode.txt');
 
     const defaultTheme = useColorScheme() ?? 'dark';
-    const [theme, setTheme] = useState<THEME>(defaultTheme);
+    const [theme, setTheme] = useState<THEME>('dark');
     const [themeLoaded, setThemeLoaded] = useState(false);
 
     const COLORS = Colors[theme];
+    MainThemeColorsDark.fonts = DefaultTheme.fonts;
 
     useEffect(() => {
         const readThemeDataFromCache = async () => {
@@ -53,7 +54,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <ThemeContext.Provider value={{ COLORS, handleChangeTheme, theme, themeLoaded }}>
-            <NativeThemeProvider value={MainThemeColorsDark}>
+            <NativeThemeProvider value={MainThemeColorsDark} >
                 {children}
             </NativeThemeProvider>
         </ThemeContext.Provider>
