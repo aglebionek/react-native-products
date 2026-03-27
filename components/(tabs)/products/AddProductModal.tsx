@@ -116,13 +116,14 @@ const AddProduct = ({ onClose }: AddProductProps) => {
     }
 
     const handleSaveNewKeyword = () => {
-        if (newKeyword.trim() === '') return setIsAddingKeyword(false);
-        if (newProduct.keywords.includes(newKeyword.trim())) {
+        const formattedKeyword = newKeyword.trim().toLowerCase();
+        if (formattedKeyword === '') return setIsAddingKeyword(false);
+        if (newProduct.keywords.includes(formattedKeyword)) {
             setNewKeyword('');
             setIsAddingKeyword(false);
             return;
         }
-        const updatedKeywords = [...newProduct.keywords, newKeyword.trim()];
+        const updatedKeywords = [...newProduct.keywords, formattedKeyword];
         setNewProduct(prev => ({ ...prev, keywords: updatedKeywords }));
         setNewKeyword('');
         setIsAddingKeyword(false);
@@ -186,7 +187,7 @@ const AddProduct = ({ onClose }: AddProductProps) => {
                                     {isAddingKeyword ? (
                                         <EditableKeywordTag
                                             keyword={newKeyword}
-                                            onChangeKeyword={(newKw) => setNewKeyword(newKw.toLowerCase().trim())}
+                                            onChangeKeyword={(newKw) => setNewKeyword(newKw.trim())}
                                             onSubmitEditing={handleSaveNewKeyword}
                                         />
                                     ) : (
@@ -261,7 +262,7 @@ const AddProduct = ({ onClose }: AddProductProps) => {
                             </View>
                         )}
 
-                        <Button onPress={async () => await handleSaveProduct()} title="Save" disabled={isButtonDisabled} />
+                        <Button onPress={handleSaveProduct} title="Save" disabled={isButtonDisabled} />
                     </View>
                 </GestureHandlerRootView>
             </LinearGradient>

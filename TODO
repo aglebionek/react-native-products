@@ -11,11 +11,11 @@ Auto-create new products json on day change
 Fix stock number change on transaction edit/delete - NOT IN THE ON SUBMIT EDITING IN USETRANSACTIONINPUT
 Fix original keyword restoring on keyboard hide
 Issue with transactions not restarting when coming from Transaction list -> old transaction -> products -> new transaction
-Keywords duplicate input when typing fast (On swiftkeyboard)?
 Fix typescript issues in files.tsx.
 <!-- DONT HIDE PRODUCTS ON 0 stock for now -->
 
 ## Improvements
+Get rid of stock altogether
 Convert functions to sync where possible.
 Clean up CSV/JSON conversion code.
 Improve the scrolling issues when loading more transactions, show a correct visual indicator when are loading more transactions.
