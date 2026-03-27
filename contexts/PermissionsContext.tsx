@@ -21,9 +21,9 @@ export const PermissionsProvider = ({ children }: { children: React.ReactNode })
     const [permissionsLoaded, setPermissionsLoaded] = useState(false);
 
     useEffect(() => {
-        const readPermissionsDataFromCache = async () => {
+        const readPermissionsDataFromCache = () => {
             try {
-                const cachedDownloadDir = await readFileFromCache() as string | null;
+                const cachedDownloadDir = readFileFromCache() as string | null;
                 if (cachedDownloadDir) return _setDownloadDirectory(cachedDownloadDir);
             } catch (error) {
                 console.error(`[ERROR] PermissionsContextProvider.readPermissionsDataFromCache \n ${error}`)

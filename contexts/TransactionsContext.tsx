@@ -13,15 +13,15 @@ type TransactionsContextType = {
     transactions: Transaction[];
     dateRange: DateRange;
     handleAddTransaction: (transaction: Transaction) => void;
-    handleDeleteTransaction: (transaction: Transaction) => Promise<void>;
-    handleEditTransaction: (newTransaction: Transaction) => Promise<void>;
+    handleDeleteTransaction: (transaction: Transaction) => void;
+    handleEditTransaction: (newTransaction: Transaction) => void;
     hasMoreTransactions: boolean;
     isLoadingMoreTransactions: boolean;
     showLoadingMoreIndicator: boolean;
-    loadAnotherTransactionsBatch: (lastTransactionTimestamp: Date) => Promise<void>;
+    loadAnotherTransactionsBatch: (lastTransactionTimestamp: Date) => void;
     unloadOlderTransactions: () => void;
     readAllTransactionsFiles: () => string[];
-    readTransactionsByFilename: (filename: string) => Promise<string | null>;
+    readTransactionsByFilename: (filename: string) => string | null;
     setDateRange: React.Dispatch<React.SetStateAction<DateRange>>;
     transactionsLoaded: boolean;
     _setYYYY_MM_DD: React.Dispatch<React.SetStateAction<string>>;
@@ -32,15 +32,15 @@ const TransactionsContext = createContext<TransactionsContextType>({
     transactions: [],
     dateRange: { start: null, end: null },
     handleAddTransaction: () => { },
-    handleDeleteTransaction: () => Promise.resolve(),
-    handleEditTransaction: () => Promise.resolve(),
+    handleDeleteTransaction: () => null,
+    handleEditTransaction: () => null,
     hasMoreTransactions: true,
     isLoadingMoreTransactions: false,
     showLoadingMoreIndicator: false,
-    loadAnotherTransactionsBatch: () => Promise.resolve(),
+    loadAnotherTransactionsBatch: () => { },
     unloadOlderTransactions: () => { },
     readAllTransactionsFiles: () => [],
-    readTransactionsByFilename: () => Promise.resolve(null),
+    readTransactionsByFilename: () => null,
     setDateRange: () => { },
     transactionsLoaded: false,
     _setYYYY_MM_DD: () => { },
@@ -68,22 +68,19 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
     } = useTransactionFile(`chat_history_${_YYYY_MM_DD}.json`, 'chat_history');
 
     useEffect(() => {
-        const load = async () => {
-            setHasMoreTransactions(true);
-            try {
-                const { transactions: last20, count } = await readLastNTransactions(20);
-                setTransactions(last20);
-                setHasMoreTransactions(count > 20);
-            } catch (error) {
-                console.error(`[ERROR] TransactionsProvider.load \n ${error}`);
-            } finally {
-                setTransactionsLoaded(true);
-            }
-        };
-        load();
+        setHasMoreTransactions(true);
+        try {
+            const { transactions: last20, count } = readLastNTransactions(20);
+            setTransactions(last20);
+            setHasMoreTransactions(count > 20);
+        } catch (error) {
+            console.error(`[ERROR] TransactionsProvider.load \n ${error}`);
+        } finally {
+            setTransactionsLoaded(true);
+        }
     }, [_YYYY_MM_DD]);
 
-    const loadAnotherTransactionsBatch = async (lastTransactionTimestamp: Date) => {
+    const loadAnotherTransactionsBatch = (lastTransactionTimestamp: Date) => {
         setIsLoadingMoreTransactions(true);
 
         try {
@@ -91,7 +88,7 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
             let prev20: Transaction[] | null;
 
             setShowLoadingMoreIndicator(true);
-            const { transactions, count } = await readTransactionsBefore(lastTransactionTimestamp, 20);
+            const { transactions, count } = readTransactionsBefore(lastTransactionTimestamp, 20);
             prev20 = transactions;
             if (prev20.length === 0) return setHasMoreTransactions(false);
             if (count <= 0) return setHasMoreTransactions(false);
@@ -136,13 +133,13 @@ export const TransactionsProvider = ({ children }: { children: React.ReactNode }
         });
     };
 
-    const handleDeleteTransaction = async (transaction: Transaction) => {
-        await deleteTransaction(transaction.timestamp);
+    const handleDeleteTransaction = (transaction: Transaction) => {
+        deleteTransaction(transaction.timestamp);
         setTransactions(prev => prev.filter(t => t.timestamp.getTime() !== transaction.timestamp.getTime()));
     };
 
-    const handleEditTransaction = async (newTransaction: Transaction) => {
-        await editTransaction(newTransaction.timestamp, newTransaction);
+    const handleEditTransaction = (newTransaction: Transaction) => {
+        editTransaction(newTransaction.timestamp, newTransaction);
         setTransactions(prev => prev.map(t =>
             t.timestamp.getTime() === newTransaction.timestamp.getTime() ? newTransaction : t
         ));

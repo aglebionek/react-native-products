@@ -45,9 +45,9 @@ const Chat = () => {
     setChatHistoryFiles(files.filter(file => file.startsWith('chat_history_') && file.endsWith('.json')).sort().reverse());
   }, [readAllTransactionsFiles]);
 
-  const convertChatHistoryToCSV = async (filename: string) => {
+  const convertChatHistoryToCSV = (filename: string) => {
     // File is now stored in CSV format natively — return it directly
-    return await readTransactionsByFilename(filename) ?? "";
+    return readTransactionsByFilename(filename) ?? "";
   }
 
   const handleDownloadCSV = async (chatHistoryElement: string) => {
@@ -55,7 +55,7 @@ const Chat = () => {
     const YYYY_MM_DD = extractYYYY_MM_DD(chatHistoryElement);
     let csvData = "";
     try {
-      csvData = await convertChatHistoryToCSV(chatHistoryElement);
+      csvData = convertChatHistoryToCSV(chatHistoryElement);
     } catch (error) {
       console.error("Failed to convert chat history to CSV", error);
       ToastAndroid.show("Failed to convert chat history to CSV", ToastAndroid.LONG);

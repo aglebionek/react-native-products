@@ -49,10 +49,10 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
         setProductClone({ ...productClone });
     }
 
-    const handleSaveProduct = async () => {
+    const handleSaveProduct = () => {
         if (isAddingKeyword) return handleSaveNewKeyword();
 
-        const didUpdate = await productManager.handleUpdateExistingProduct(product, productClone);
+        const didUpdate = productManager.handleUpdateExistingProduct(product, productClone);
         if (!didUpdate) return ToastAndroid.show('Product with this name already exists', ToastAndroid.SHORT);
         
         ToastAndroid.show(`Saved changes to ${productClone.name}`, ToastAndroid.SHORT);
@@ -66,13 +66,14 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
     }
 
     const handleSaveNewKeyword = () => {
-        if (newKeyword.trim() === '') return setIsAddingKeyword(false);
-        if (productClone.keywords.includes(newKeyword.trim())) {
+        const formattedKeyword = newKeyword.toLowerCase().trim();
+        if (formattedKeyword === '') return setIsAddingKeyword(false);
+        if (productClone.keywords.includes(formattedKeyword)) {
             setNewKeyword('');
             setIsAddingKeyword(false);
             return;
         }
-        const updatedKeywords = [...productClone.keywords, newKeyword.trim()];
+        const updatedKeywords = [...productClone.keywords, formattedKeyword];
         setProductClone(prev => ({ ...prev, keywords: updatedKeywords }));
         setNewKeyword('');
         setIsAddingKeyword(false);
@@ -147,7 +148,7 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
                                     {isAddingKeyword ? (
                                         <EditableKeywordTag
                                             keyword={newKeyword}
-                                            onChangeKeyword={(newKw) => setNewKeyword(newKw.toLowerCase().trim())}
+                                            onChangeKeyword={(newKw) => setNewKeyword(newKw.trim())}
                                             onSubmitEditing={handleSaveNewKeyword}
                                         />
                                     ) : (
@@ -198,7 +199,7 @@ const EditProduct = ({ handleCloneProduct, product, onClose }: EditProductProps)
                             </View>
                         )}
 
-                        <Button onPress={async () => await handleSaveProduct()} title="Save" disabled={isAddingKeyword} />
+                        <Button onPress={handleSaveProduct} title="Save" disabled={isAddingKeyword} />
 
                         {isConfirmDeleteModalOpen && (
                             <ConfirmModal 
@@ -295,6 +296,7 @@ const EditableKeywordTag = ({ keyword, onChangeKeyword, onSubmitEditing }: { key
                 style={{ color: 'white', marginRight: 5, minWidth: 50, height: 20, padding: 0 }}
                 autoFocus
                 onSubmitEditing={onSubmitEditing}
+                onBlur={onSubmitEditing}
             />
             <Ionicons
                 name="close-circle"

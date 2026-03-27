@@ -10,30 +10,30 @@ import useCache from "@/hooks/useCache";
 
 type ProductsContextProvider = {
     keychains: Keychain[];
-    setKeychains: (keychains: Keychain[]) => Promise<void>;
+    setKeychains: (keychains: Keychain[]) => void;
     prints: Print[];
-    setPrints: (prints: Print[]) => Promise<void>;
+    setPrints: (prints: Print[]) => void;
     stickers: Sticker[];
-    setStickers: (stickers: Sticker[]) => Promise<void>;
+    setStickers: (stickers: Sticker[]) => void;
     pins: Pin[];
-    setPins: (pins: Pin[]) => Promise<void>;
+    setPins: (pins: Pin[]) => void;
     bookmarks: Bookmark[];
-    setBookmarks: (bookmarks: Bookmark[]) => Promise<void>;
+    setBookmarks: (bookmarks: Bookmark[]) => void;
     productsLoaded: boolean;
     productsLoadingError: string | null;
 }
 
 const ProductsContext = createContext<ProductsContextProvider>({
     keychains: [],
-    setKeychains: async () => {},
+    setKeychains: () => { },
     prints: [],
-    setPrints: async () => {},
+    setPrints: () => { },
     stickers: [],
-    setStickers: async () => {},
+    setStickers: () => { },
     pins: [],
-    setPins: async () => {},
+    setPins: () => { },
     bookmarks: [],
-    setBookmarks: async () => {},
+    setBookmarks: () => { },
     productsLoaded: false,
     productsLoadingError: null,
 })
@@ -55,91 +55,87 @@ export const ProductsProvider = ({ children }: { children: React.ReactNode }) =>
     const [productsLoaded, setProductsLoaded] = useState(false);
 
     useEffect(() => {
-        const readProductsDataFromCache = async () => {
-            try {
-                const cachedStickers = await readStickersFromCache();
-                if (cachedStickers) _setStickers(JSON.parse(cachedStickers));
-                // TODO: rewrite this to use a copy of the prints.json
-                else _setStickers(defaultStickers);
-            } catch (error) {
-                console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readStickers \n ${error}`);
-                setProductsLoadingError('Failed to load stickers from cache.');
-                return;
-            }
-
-            try {
-                const cachedPrints = await readPrintsFromCache();
-                if (cachedPrints) _setPrints(JSON.parse(cachedPrints));
-                // TODO: rewrite this to use a copy of the prints.json
-                else _setPrints(defaultPrints);
-            } catch (error) {
-                console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readPrints \n ${error}`);
-                setProductsLoadingError('Failed to load prints from cache.');
-                return;
-            }
-
-            try {
-                const cachedKeychains = await readKeychainsFromCache();
-                if (cachedKeychains) _setKeychains(JSON.parse(cachedKeychains));
-                // TODO: rewrite this to use a copy of the keychains.json
-                else _setKeychains(defaultKeychains);
-            } catch (error) {
-                console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readKeychains \n ${error}`);
-                setProductsLoadingError('Failed to load keychains from cache.');
-                return;
-            }
-
-            try {
-                const cachedPins = await readPinsFromCache();
-                if (cachedPins) _setPins(JSON.parse(cachedPins));
-                // TODO: rewrite this to use a copy of the pins.json
-                else _setPins(defaultPins);
-            } catch (error) {
-                console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readPins \n ${error}`);
-                setProductsLoadingError('Failed to load pins from cache.');
-                return;
-            }
-
-            try {
-                const cachedBookmarks = await readBookmarksFromCache();
-                if (cachedBookmarks) _setBookmarks(JSON.parse(cachedBookmarks));
-                // TODO: rewrite this to use a copy of the bookmarks.json
-                else _setBookmarks(defaultBookmarks);
-            } catch (error) {
-                console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readBookmarks \n ${error}`);
-                setProductsLoadingError('Failed to load bookmarks from cache.');
-                return;
-            }
-
-            setProductsLoaded(true);
+        try {
+            const cachedStickers = readStickersFromCache();
+            if (cachedStickers) _setStickers(JSON.parse(cachedStickers));
+            // TODO: rewrite this to use a copy of the prints.json
+            else _setStickers(defaultStickers);
+        } catch (error) {
+            console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readStickers \n ${error}`);
+            setProductsLoadingError('Failed to load stickers from cache.');
+            return;
         }
 
-        readProductsDataFromCache();
+        try {
+            const cachedPrints = readPrintsFromCache();
+            if (cachedPrints) _setPrints(JSON.parse(cachedPrints));
+            // TODO: rewrite this to use a copy of the prints.json
+            else _setPrints(defaultPrints);
+        } catch (error) {
+            console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readPrints \n ${error}`);
+            setProductsLoadingError('Failed to load prints from cache.');
+            return;
+        }
+
+        try {
+            const cachedKeychains = readKeychainsFromCache();
+            if (cachedKeychains) _setKeychains(JSON.parse(cachedKeychains));
+            // TODO: rewrite this to use a copy of the keychains.json
+            else _setKeychains(defaultKeychains);
+        } catch (error) {
+            console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readKeychains \n ${error}`);
+            setProductsLoadingError('Failed to load keychains from cache.');
+            return;
+        }
+
+        try {
+            const cachedPins = readPinsFromCache();
+            if (cachedPins) _setPins(JSON.parse(cachedPins));
+            // TODO: rewrite this to use a copy of the pins.json
+            else _setPins(defaultPins);
+        } catch (error) {
+            console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readPins \n ${error}`);
+            setProductsLoadingError('Failed to load pins from cache.');
+            return;
+        }
+
+        try {
+            const cachedBookmarks = readBookmarksFromCache();
+            if (cachedBookmarks) _setBookmarks(JSON.parse(cachedBookmarks));
+            // TODO: rewrite this to use a copy of the bookmarks.json
+            else _setBookmarks(defaultBookmarks);
+        } catch (error) {
+            console.error(`[ERROR] ProductsContextProvider.readProductsDataFromCache.readBookmarks \n ${error}`);
+            setProductsLoadingError('Failed to load bookmarks from cache.');
+            return;
+        }
+
+        setProductsLoaded(true);
     }, []);
 
-    const setKeychains = async (keychains: Keychain[]) => {
+    const setKeychains = (keychains: Keychain[]) => {
         _setKeychains(keychains);
-        await saveKeychainsToCache(JSON.stringify(keychains));
+        saveKeychainsToCache(JSON.stringify(keychains));
     }
 
-    const setPrints = async (prints: Print[]) => {
+    const setPrints = (prints: Print[]) => {
         _setPrints(prints);
-        await savePrintsToCache(JSON.stringify(prints));
+        savePrintsToCache(JSON.stringify(prints));
     }
 
-    const setStickers = async (stickers: Sticker[]) => {
+    const setStickers = (stickers: Sticker[]) => {
         _setStickers(stickers);
-        await saveStickersToCache(JSON.stringify(stickers));
+        saveStickersToCache(JSON.stringify(stickers));
     }
 
-    const setPins = async (pins: Pin[]) => {
+    const setPins = (pins: Pin[]) => {
         _setPins(pins);
-        await savePinsToCache(JSON.stringify(pins));
+        savePinsToCache(JSON.stringify(pins));
     }
 
-    const setBookmarks = async (bookmarks: Bookmark[]) => {
+    const setBookmarks = (bookmarks: Bookmark[]) => {
         _setBookmarks(bookmarks);
-        await saveBookmarksToCache(JSON.stringify(bookmarks));
+        saveBookmarksToCache(JSON.stringify(bookmarks));
     }
 
     return (

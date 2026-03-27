@@ -30,7 +30,7 @@ const useSelectStateAndSetterForProduct = () => {
                 break;
         }
 
-        setState = setState as (products: Product[], type: PRODUCT_TYPE) => Promise<void>;
+        setState = setState as (products: Product[], type: PRODUCT_TYPE) => void;
 
         return { state, setState };
     };

@@ -24,10 +24,10 @@ const useCache = (cachedFileName: string, cachedFileDirectory: string = "") => {
         }
     }, [file]);
 
-    const readFileFromCache = useCallback(async () => {
+    const readFileFromCache = useCallback(() => {
         try {
             if (!file.exists) return null;
-            return await file.text();
+            return file.textSync();
         } catch (error) {
             console.error(error);
             console.error("Failed to read file from cache");
@@ -69,13 +69,13 @@ const useCache = (cachedFileName: string, cachedFileDirectory: string = "") => {
         }
     }, [dir]);
 
-    const readFileFromCacheByName = useCallback(async (fileName: string) => {
+    const readFileFromCacheByName = useCallback((fileName: string) => {
         try {
             const target = dir
                 ? new File(dir, fileName)
                 : new File(Paths.cache, fileName);
             if (!target.exists) return null;
-            return await target.text();
+            return target.textSync();
         } catch (error) {
             console.error(error);
             console.error("Failed to read file from cache by name");

@@ -163,7 +163,7 @@ export const useTransactionInput = (initialTransaction: Transaction | null = nul
         }
     }
 
-    const onSubmitEditing = async () => {
+    const onSubmitEditing = () => {
         if (inputState !== InputStates.SELECTING_QUANTITY) return;
         if (!product) {
             ToastAndroid.show('No product selected', ToastAndroid.SHORT);
@@ -186,7 +186,7 @@ export const useTransactionInput = (initialTransaction: Transaction | null = nul
         let newQuantity = product.stock - quantity;
         if (initialTransaction) newQuantity = product.stock + initialTransaction.productQuantity - quantity;
 
-        await productManager.mutations.handleUpdateStockForProduct(product, newQuantity);
+        productManager.mutations.handleUpdateStockForProduct(product, newQuantity);
 
         if (initialTransaction) handleEditTransaction(newTransaction);
         else handleAddTransaction(newTransaction);

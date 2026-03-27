@@ -79,13 +79,13 @@ const BrowseProducts = () => {
         setSearchResults(filteredResults);
     }
 
-    const handleCloneProduct = async () => {
+    const handleCloneProduct = () => {
         const productToClone = { ...selectedProduct } as Product | null;
         if (!productToClone) return;
 
         productToClone.name = `${productToClone.name} - COPY`;
 
-        const productAdded = await productManager.handleAddNewProduct(productToClone);
+        const productAdded = productManager.handleAddNewProduct(productToClone);
         if (!productAdded) return ToastAndroid.show(`Product with this name already exists: ${productToClone.name}`, ToastAndroid.SHORT);
 
         handleModalOnClose();

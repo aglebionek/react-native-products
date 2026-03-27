@@ -107,9 +107,9 @@ const AddProduct = ({ onClose }: AddProductProps) => {
         }
     }
 
-    const handleSaveProduct = async () => {
+    const handleSaveProduct = () => {
         if (isAddingKeyword) return handleSaveNewKeyword();
-        const productAdded = await productManager.handleAddNewProduct(newProduct as Product);
+        const productAdded = productManager.handleAddNewProduct(newProduct as Product);
         if (!productAdded) return ToastAndroid.show('Product with this name already exists', ToastAndroid.SHORT);
         ToastAndroid.show(`Added ${newProduct.name}`, ToastAndroid.SHORT);
         onClose();

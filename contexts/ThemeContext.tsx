@@ -32,18 +32,15 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     MainThemeColorsDark.fonts = DefaultTheme.fonts;
 
     useEffect(() => {
-        const readThemeDataFromCache = async () => {
-            try {
-                const cachedTheme = await readFileFromCache() as THEME | null;
-                if (cachedTheme) return setTheme(cachedTheme);
-                saveDataToCache(defaultTheme);
-            } catch (error) {
-                console.error(`[ERROR] ThemeContextProvider.readThemeDataFromCache \n ${error}`)
-            } finally {
-                setThemeLoaded(true);
-            }
+        try {
+            const cachedTheme = readFileFromCache() as THEME | null;
+            if (cachedTheme) return setTheme(cachedTheme);
+            saveDataToCache(defaultTheme);
+        } catch (error) {
+            console.error(`[ERROR] ThemeContextProvider.readThemeDataFromCache \n ${error}`)
+        } finally {
+            setThemeLoaded(true);
         }
-        readThemeDataFromCache()
     }, []);
 
     const handleChangeTheme = () => {

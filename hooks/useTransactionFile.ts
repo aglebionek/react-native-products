@@ -50,8 +50,8 @@ const useTransactionFile = (filename: string, directory: string) => {
     };
 
     /** Remove the line whose timestamp matches exactly. */
-    const deleteTransaction = async (timestamp: Date): Promise<void> => {
-        const raw = await readFileFromCache();
+    const deleteTransaction = (timestamp: Date): void => {
+        const raw = readFileFromCache();
         if (!raw) return;
         const lines = splitLines(raw);
         const filtered = lines.filter(line => {
@@ -62,8 +62,8 @@ const useTransactionFile = (filename: string, directory: string) => {
     };
 
     /** Replace the line whose timestamp matches with the updated transaction. */
-    const editTransaction = async (timestamp: Date, updated: Transaction): Promise<void> => {
-        const raw = await readFileFromCache();
+    const editTransaction = (timestamp: Date, updated: Transaction): void => {
+        const raw = readFileFromCache();
         if (!raw) return;
         const lines = splitLines(raw);
         const replaced = lines.map(line => {
@@ -76,8 +76,8 @@ const useTransactionFile = (filename: string, directory: string) => {
     };
 
     /** Read the last N transactions from the file (most-recent N, in chronological order). */
-    const readLastNTransactions = async (n: number): Promise<{ transactions: Transaction[], count: number }> => {
-        const raw = await readFileFromCache();
+    const readLastNTransactions = (n: number): { transactions: Transaction[], count: number } => {
+        const raw = readFileFromCache();
         if (!raw) return { transactions: [], count: 0 };
         const lines = splitLines(raw);
         const transactions = lines
@@ -92,8 +92,8 @@ const useTransactionFile = (filename: string, directory: string) => {
      * Returns them in chronological order (oldest first).
      * Returns null if `timestamp` is not found in the file.
      */
-    const readTransactionsBefore = async (timestamp: Date, n: number): Promise<{ transactions: Transaction[], count: number }> => {
-        const raw = await readFileFromCache();
+    const readTransactionsBefore = (timestamp: Date, n: number): { transactions: Transaction[], count: number } => {
+        const raw = readFileFromCache();
         if (!raw) return { transactions: [], count: 0 };
         const lines = splitLines(raw);
         const idx = lines.findIndex(line => {
@@ -111,10 +111,10 @@ const useTransactionFile = (filename: string, directory: string) => {
     };
 
     /** Return the raw file contents (the file itself is valid CSV). */
-    const readRawFile = async (): Promise<string | null> => readFileFromCache();
+    const readRawFile = (): string | null => readFileFromCache();
 
     /** Return the raw contents of any file in the same directory by filename. */
-    const readRawFileByName = async (name: string): Promise<string | null> =>
+    const readRawFileByName = (name: string): string | null =>
         readFileFromCacheByName(name);
 
     return {

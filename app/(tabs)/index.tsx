@@ -49,10 +49,9 @@ const Transactions = () => {
   });
 
   const handleSubmitEditing = () => {
-    onSubmitEditing().then(() => {
-      setSelect(true);
-      scrollRef.current?.scrollToEnd({ animated: true });
-    });
+    onSubmitEditing();
+    setSelect(true);
+    scrollRef.current?.scrollToEnd({ animated: true });
   }
 
   return (
@@ -140,9 +139,8 @@ const Transactions = () => {
               const nearTop = nativeEvent.contentSize.height - nativeEvent.contentOffset.y - nativeEvent.layoutMeasurement.height < 50;
               if (!nearTop) return;
               isLoadingMore.current = true;
-              loadAnotherTransactionsBatch(transactions[0].timestamp).then(() => {
-                isLoadingMore.current = false;
-              });
+              loadAnotherTransactionsBatch(transactions[0].timestamp);
+              isLoadingMore.current = false;
             }}
           />
 

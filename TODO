@@ -12,11 +12,11 @@ Fix stock number change on transaction edit/delete - NOT IN THE ON SUBMIT EDITIN
 Fix original keyword restoring on keyboard hide
 Issue with transactions not restarting when coming from Transaction list -> old transaction -> products -> new transaction
 Fix typescript issues in files.tsx.
+Can't scroll transaction history
 <!-- DONT HIDE PRODUCTS ON 0 stock for now -->
 
 ## Improvements
 Get rid of stock altogether
-Convert functions to sync where possible.
 Clean up CSV/JSON conversion code.
 Improve the scrolling issues when loading more transactions, show a correct visual indicator when are loading more transactions.
 Add option to remove old chat histories.
