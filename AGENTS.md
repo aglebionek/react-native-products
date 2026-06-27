@@ -2,10 +2,9 @@
 This repository is a product tracking android app created with React Native Expo.
 
 ## Rules
-To prevent conflicts, every session MUST work in its own git worktree, never in the main checkout.
+ALWAYS ask if the changes are to be made in their own git worktree, or in the main checkout.
 ALWAYS use grill-me if you're unsure about something.
 NEVER start implementing a plan before user approval.
-ONLY edit files in the main checkout if asked to.
 NEVER commit anything unless asked to.
 NEVER delete worktrees until asked to.
 
