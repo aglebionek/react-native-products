@@ -1,19 +1,15 @@
 ## Critical
 Create a backup of products for loading issues (as to not overwrite existing data)
-Optimzaction issues:
-- app starts to lag if there are many transactions added in a day. 
 Add pagination to transaction list in history chat, and only load transactions for the current day in the history chat.
-- lower the size of product JSONs? Maybe make the keys shorter
 
 ## Bugs
-Edit product - auto-select the stock number, add keyword on focus change
+When adding a transaction, the field doesn't accept polish characters
+The exported csv file has wrong encoding for polish character
 Auto-create new products json on day change
-Fix stock number change on transaction edit/delete - NOT IN THE ON SUBMIT EDITING IN USETRANSACTIONINPUT
 Fix original keyword restoring on keyboard hide
 Issue with transactions not restarting when coming from Transaction list -> old transaction -> products -> new transaction
 Fix typescript issues in files.tsx.
 Can't scroll transaction history
-<!-- DONT HIDE PRODUCTS ON 0 stock for now -->
 
 ## Improvements
 Get rid of stock altogether
