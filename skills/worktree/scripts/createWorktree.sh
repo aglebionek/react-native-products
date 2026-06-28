@@ -8,8 +8,12 @@ cd "../worktrees/${BRANCH_NAME}"
 ROOT_DIR=$(pwd)
 
 ln -s "$ROOT_DIR/.expo" .expo
+ln -s "$ROOT_DIR/AGENTS.md" AGENTS.md
+ln -s "$ROOT_DIR/GLOSSARY.md" GLOSSARY.md
 ln -s "$ROOT_DIR/android" android
 ln -s "$ROOT_DIR/node_modules" node_modules
+ln -s "$ROOT_DIR/skills" skills
+ln -s "$ROOT_DIR/scripts" scripts
 
 cat > .worktree-session <<EOF
 path-to-worktree: ../worktrees/${BRANCH_NAME}
